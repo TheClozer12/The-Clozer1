@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: { ko: '돈카츠', en: 'Tonkatsu' }, emoji: '🍱', desc: { ko: '바삭한 돈까스에 소스를 듬뿍', en: 'Golden crispy breaded pork cutlet with savory sauce' }, type: 'japanese', mood: ['happy', 'tired'], people: ['solo', 'couple'], tags: { ko: ['튀김', '간편식', '인기메뉴'], en: ['Fried', 'Quick', 'Popular'] } },
         { name: { ko: '우동', en: 'Udon' }, emoji: '🍲', desc: { ko: '따뜻한 국물에 쫄깃한 굵은 면', en: 'Thick chewy noodles in warm savory broth' }, type: 'japanese', mood: ['tired', 'cold'], people: ['solo'], tags: { ko: ['면요리', '국물요리', '담백한맛'], en: ['Noodles', 'Soup', 'Mild'] } },
         { name: { ko: '파스타', en: 'Pasta' }, emoji: '🍝', desc: { ko: '크림, 토마토, 오일 다양한 소스의 면요리', en: 'Italian noodles with cream, tomato, or olive oil sauce' }, type: 'western', mood: ['happy'], people: ['solo', 'couple'], tags: { ko: ['면요리', '데이트', '세련된맛'], en: ['Noodles', 'Date Night', 'Classy'] } },
-        { name: { ko: '피자', en: 'Pizza' }, emoji: '🍕', desc: { ko: '쭉 늘어나는 치즈와 다양한 토핑', en: 'Stretchy melted cheese with your favorite toppings' }, type: 'western', mood: ['happy', 'stressed'], people: ['couple', 'group'], tags: { ko: ['배달음식', '파티음식', '치즈'], en: ['Delivery', 'Party Food', 'Cheesy'] } },
+        { name: { ko: '피자', en: 'Pizza' }, emoji: '🍕', desc: { ko: '쭉 늘어나는 치즈와 다양한 토핑', en: 'Stretchy melted cheese with your favorite toppings' }, type: 'western', mood: ['happy', 'stressed'], people: ['couple', 'group'], tags: { ko: ['배달음식', '파티음식', '치즈'], en: ['Delivery', 'Party Food', 'Cheesy'] }, image: 'https://media.istockphoto.com/id/1459715799/ko/%EC%82%AC%EC%A7%84/%ED%96%84%EA%B3%BC-%EC%B9%98%EC%A6%88%EB%A5%BC-%EA%B3%81%EB%93%A4%EC%9D%B8-%ED%94%BC%EC%9E%90.jpg?s=1024x1024&w=is&k=20&c=SLmzXX8AQ3jkqatjZgNR3ZSkD82NCFQtsYuT31eeeN4=' },
         { name: { ko: '햄버거', en: 'Burger' }, emoji: '🍔', desc: { ko: '육즙 가득한 패티와 신선한 야채', en: 'Juicy patty stacked with fresh veggies and special sauce' }, type: 'western', mood: ['happy', 'tired'], people: ['solo'], tags: { ko: ['간편식', '패스트푸드', '육즙'], en: ['Quick', 'Fast Food', 'Juicy'] } },
         { name: { ko: '스테이크', en: 'Steak' }, emoji: '🥩', desc: { ko: '완벽하게 구운 두툼한 고기', en: 'Perfectly seared thick-cut steak cooked to your liking' }, type: 'western', mood: ['happy', 'stressed'], people: ['couple'], tags: { ko: ['고기', '데이트', '특별한날'], en: ['Meat', 'Date Night', 'Special'] } },
         { name: { ko: '떡볶이', en: 'Tteokbokki' }, emoji: '🍢', desc: { ko: '매콤달콤한 국민 간식', en: 'Spicy-sweet chewy rice cakes — Korea\'s favorite snack' }, type: 'korean', mood: ['stressed', 'happy'], people: ['solo', 'couple'], tags: { ko: ['매운맛', '간식', '분식'], en: ['Spicy', 'Snack', 'Street Food'] } },
@@ -165,8 +165,12 @@ document.addEventListener('DOMContentLoaded', () => {
         resultDiv.innerHTML = `<div class="loading"><div class="spinner"></div><br>${t.loading}</div>`;
 
         setTimeout(() => {
+            const imageHtml = pick.image
+                ? `<img class="menu-image" src="${pick.image}" alt="${pick.name[currentLang]}">`
+                : '';
             resultDiv.innerHTML = `
                 <div class="menu-card">
+                    ${imageHtml}
                     <h2>${pick.emoji} ${pick.name[currentLang]}</h2>
                     <p class="menu-desc">${pick.desc[currentLang]}</p>
                     <div class="menu-tags">
