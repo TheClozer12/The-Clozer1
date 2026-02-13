@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'form-label-message': '문의 내용',
             'contact-submit': '📨 문의 보내기',
             'contact-success': '✅ 문의가 성공적으로 전송되었습니다!',
+            'comments-title': '💬 댓글',
         },
         en: {
             title: '🍽️ What\'s for Dinner?',
@@ -73,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'form-label-message': 'Message',
             'contact-submit': '📨 Send Inquiry',
             'contact-success': '✅ Your inquiry has been sent successfully!',
+            'comments-title': '💬 Comments',
         }
     };
 
@@ -173,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('form-label-email').textContent = t['form-label-email'];
         document.getElementById('form-label-message').textContent = t['form-label-message'];
         document.getElementById('contact-submit').textContent = t['contact-submit'];
+        document.getElementById('comments-title').textContent = t['comments-title'];
 
         const isDark = document.body.classList.contains('dark-mode');
         themeToggle.textContent = isDark ? t.themeLight : t.themeDark;
