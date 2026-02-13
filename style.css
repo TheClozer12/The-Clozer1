@@ -242,10 +242,16 @@ body.dark-mode .loading .spinner {
     to { opacity: 1; transform: translateY(0); }
 }
 
-#theme-toggle {
+.header-controls {
     position: absolute;
     right: 1rem;
     top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+#theme-toggle,
+#lang-toggle {
     background-color: rgba(255, 255, 255, 0.2);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.4);
@@ -256,11 +262,12 @@ body.dark-mode .loading .spinner {
     transition: background-color 0.3s;
 }
 
-#theme-toggle:hover {
+#theme-toggle:hover,
+#lang-toggle:hover {
     background-color: rgba(255, 255, 255, 0.3);
 }
 
 @media (max-width: 500px) {
     header h1 { font-size: 1.5rem; }
-    #theme-toggle { position: static; margin-top: 0.8rem; }
+    header { padding-top: 3.5rem; }
 }

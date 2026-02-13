@@ -3,43 +3,46 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>오늘 저녁 뭐 먹지?</title>
+    <title>오늘 저녁 뭐 먹지? | What's for Dinner?</title>
     <link href='/style.css' rel='stylesheet'>
 </head>
 <body>
     <header>
-        <h1>🍽️ 오늘 저녁 뭐 먹지?</h1>
-        <p>기분과 상황을 알려주면 딱 맞는 저녁 메뉴를 추천해드려요!</p>
-        <button id="theme-toggle" aria-label="테마 전환">🌙 다크모드</button>
+        <div class="header-controls">
+            <button id="lang-toggle" aria-label="Language">🌐 EN</button>
+            <button id="theme-toggle" aria-label="Toggle theme">🌙</button>
+        </div>
+        <h1 id="title">🍽️ 오늘 저녁 뭐 먹지?</h1>
+        <p id="subtitle">기분과 상황을 알려주면 딱 맞는 저녁 메뉴를 추천해드려요!</p>
     </header>
     <main>
         <section class="filters">
             <div class="filter-group">
-                <label>기분</label>
+                <label id="label-mood">기분</label>
                 <div class="filter-options" id="mood-options">
-                    <button class="filter-btn" data-value="happy">😊 기분 좋음</button>
-                    <button class="filter-btn" data-value="tired">😩 피곤함</button>
-                    <button class="filter-btn" data-value="stressed">😤 스트레스</button>
-                    <button class="filter-btn" data-value="cold">🥶 추움</button>
-                    <button class="filter-btn" data-value="hot">🥵 더움</button>
+                    <button class="filter-btn" data-value="happy"><span>😊</span> <span data-i18n="mood-happy">기분 좋음</span></button>
+                    <button class="filter-btn" data-value="tired"><span>😩</span> <span data-i18n="mood-tired">피곤함</span></button>
+                    <button class="filter-btn" data-value="stressed"><span>😤</span> <span data-i18n="mood-stressed">스트레스</span></button>
+                    <button class="filter-btn" data-value="cold"><span>🥶</span> <span data-i18n="mood-cold">추움</span></button>
+                    <button class="filter-btn" data-value="hot"><span>🥵</span> <span data-i18n="mood-hot">더움</span></button>
                 </div>
             </div>
             <div class="filter-group">
-                <label>식사 인원</label>
+                <label id="label-people">식사 인원</label>
                 <div class="filter-options" id="people-options">
-                    <button class="filter-btn" data-value="solo">🧑 혼밥</button>
-                    <button class="filter-btn" data-value="couple">👫 2인</button>
-                    <button class="filter-btn" data-value="group">👨‍👩‍👧‍👦 단체</button>
+                    <button class="filter-btn" data-value="solo"><span>🧑</span> <span data-i18n="people-solo">혼밥</span></button>
+                    <button class="filter-btn" data-value="couple"><span>👫</span> <span data-i18n="people-couple">2인</span></button>
+                    <button class="filter-btn" data-value="group"><span>👨‍👩‍👧‍👦</span> <span data-i18n="people-group">단체</span></button>
                 </div>
             </div>
             <div class="filter-group">
-                <label>음식 종류</label>
+                <label id="label-type">음식 종류</label>
                 <div class="filter-options" id="type-options">
-                    <button class="filter-btn" data-value="korean">🇰🇷 한식</button>
-                    <button class="filter-btn" data-value="chinese">🇨🇳 중식</button>
-                    <button class="filter-btn" data-value="japanese">🇯🇵 일식</button>
-                    <button class="filter-btn" data-value="western">🍝 양식</button>
-                    <button class="filter-btn" data-value="any">🎲 아무거나</button>
+                    <button class="filter-btn" data-value="korean"><span>🇰🇷</span> <span data-i18n="type-korean">한식</span></button>
+                    <button class="filter-btn" data-value="chinese"><span>🇨🇳</span> <span data-i18n="type-chinese">중식</span></button>
+                    <button class="filter-btn" data-value="japanese"><span>🇯🇵</span> <span data-i18n="type-japanese">일식</span></button>
+                    <button class="filter-btn" data-value="western"><span>🍝</span> <span data-i18n="type-western">양식</span></button>
+                    <button class="filter-btn" data-value="any"><span>🎲</span> <span data-i18n="type-any">아무거나</span></button>
                 </div>
             </div>
         </section>
