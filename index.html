@@ -1,14 +1,23 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Business Idea Analyzer</title>
+    <link href='/style.css' rel='stylesheet'>
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+    <header>
+        <h1>Business Idea Analyzer</h1>
+        <p>Enter your business idea below and we'll analyze its potential!</p>
+    </header>
+    <main>
+        <div class="input-container">
+            <textarea id="business-idea" placeholder="Describe your business idea..."></textarea>
+            <button id="analyze-button">Analyze</button>
+        </div>
+        <div id="analysis-result"></div>
+    </main>
+    <script defer type="text/javascript" src="/main.js"></script>
 </body>
 </html>
