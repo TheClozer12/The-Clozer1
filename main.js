@@ -32,6 +32,13 @@ document.addEventListener('DOMContentLoaded', () => {
             langBtn: '🌐 EN',
             themeDark: '🌙',
             themeLight: '☀️',
+            'contact-title': '📩 제휴 문의',
+            'contact-desc': '비즈니스 제휴, 광고, 협업 등 문의사항을 남겨주세요.',
+            'form-label-name': '이름 / 회사명',
+            'form-label-email': '이메일',
+            'form-label-message': '문의 내용',
+            'contact-submit': '📨 문의 보내기',
+            'contact-success': '✅ 문의가 성공적으로 전송되었습니다!',
         },
         en: {
             title: '🍽️ What\'s for Dinner?',
@@ -59,6 +66,13 @@ document.addEventListener('DOMContentLoaded', () => {
             langBtn: '🌐 KO',
             themeDark: '🌙',
             themeLight: '☀️',
+            'contact-title': '📩 Partnership Inquiry',
+            'contact-desc': 'For business partnerships, advertising, or collaboration — drop us a message.',
+            'form-label-name': 'Name / Company',
+            'form-label-email': 'Email',
+            'form-label-message': 'Message',
+            'contact-submit': '📨 Send Inquiry',
+            'contact-success': '✅ Your inquiry has been sent successfully!',
         }
     };
 
@@ -153,6 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
         langToggle.textContent = t.langBtn;
         document.documentElement.lang = lang;
 
+        document.getElementById('contact-title').textContent = t['contact-title'];
+        document.getElementById('contact-desc').textContent = t['contact-desc'];
+        document.getElementById('form-label-name').textContent = t['form-label-name'];
+        document.getElementById('form-label-email').textContent = t['form-label-email'];
+        document.getElementById('form-label-message').textContent = t['form-label-message'];
+        document.getElementById('contact-submit').textContent = t['contact-submit'];
+
         const isDark = document.body.classList.contains('dark-mode');
         themeToggle.textContent = isDark ? t.themeLight : t.themeDark;
 
@@ -217,4 +238,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     recommendButton.addEventListener('click', recommend);
+
+    // Contact form submission
+    const contactForm = document.getElementById('contact-form');
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('contact-submit');
+        const successMsg = document.getElementById('contact-success');
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.6';
+
+        try {
+            const res = await fetch(contactForm.action, {
+                method: 'POST',
+                body: new FormData(contactForm),
+                headers: { 'Accept': 'application/json' }
+            });
+            if (res.ok) {
+                contactForm.reset();
+                successMsg.textContent = i18n[currentLang]['contact-success'];
+                successMsg.style.display = 'block';
+                setTimeout(() => { successMsg.style.display = 'none'; }, 5000);
+            }
+        } catch (_) { /* silent */ }
+
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+    });
 });

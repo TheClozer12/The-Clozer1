@@ -275,6 +275,113 @@ body.dark-mode .loading .spinner {
     background-color: rgba(255, 255, 255, 0.3);
 }
 
+/* Contact Form */
+.contact-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #ffe0cc;
+}
+
+body.dark-mode .contact-section {
+    border-top-color: #0f3460;
+}
+
+.contact-section h2 {
+    font-size: 1.4rem;
+    margin: 0 0 0.3rem;
+}
+
+.contact-section > p {
+    color: #777;
+    margin: 0 0 1.2rem;
+    font-size: 0.9rem;
+}
+
+body.dark-mode .contact-section > p {
+    color: #aaa;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background-color: #fff;
+    color: #333;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #ff6b35;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group textarea {
+    background-color: #16213e;
+    color: #e0e0e0;
+    border-color: #0f3460;
+}
+
+body.dark-mode .form-group input:focus,
+body.dark-mode .form-group textarea:focus {
+    border-color: #e94560;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+#contact-submit {
+    display: block;
+    width: 100%;
+    padding: 0.9rem;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#contact-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+}
+
+body.dark-mode #contact-submit {
+    background: linear-gradient(135deg, #e94560, #c23152);
+}
+
+body.dark-mode #contact-submit:hover {
+    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+}
+
+.success-msg {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: bold;
+    color: #2ecc71;
+    animation: fadeIn 0.5s ease;
+}
+
 @media (max-width: 500px) {
     header h1 { font-size: 1.5rem; }
     header { padding-top: 3.5rem; }
