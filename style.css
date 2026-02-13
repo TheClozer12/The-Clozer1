@@ -3,6 +3,12 @@ body {
     margin: 0;
     background-color: #f4f4f9;
     color: #333;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+    background-color: #1a1a2e;
+    color: #e0e0e0;
 }
 
 header {
@@ -10,6 +16,11 @@ header {
     color: white;
     padding: 1rem;
     text-align: center;
+    position: relative;
+}
+
+body.dark-mode header {
+    background-color: #16213e;
 }
 
 main {
@@ -27,6 +38,13 @@ textarea {
     padding: 0.5rem;
     border: 1px solid #ccc;
     border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+body.dark-mode textarea {
+    background-color: #16213e;
+    color: #e0e0e0;
+    border-color: #0f3460;
 }
 
 button {
@@ -47,4 +65,29 @@ button:hover {
     background-color: white;
     padding: 1rem;
     border-radius: 4px;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+body.dark-mode #analysis-result {
+    background-color: #16213e;
+    border-color: #0f3460;
+}
+
+#theme-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.3s;
+}
+
+#theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.3);
 }
