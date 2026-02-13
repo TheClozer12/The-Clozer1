@@ -75,9 +75,13 @@
             <h2 id="comments-title">💬 댓글</h2>
             <div id="disqus_thread"></div>
             <script>
+                function getDisqusColorScheme() {
+                    return document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+                }
                 var disqus_config = function () {
                     this.page.url = window.location.href;
                     this.page.identifier = 'whats-for-dinner';
+                    this.page.colorScheme = getDisqusColorScheme();
                 };
                 (function() {
                     var d = document, s = d.createElement('script');

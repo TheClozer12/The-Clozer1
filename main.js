@@ -151,6 +151,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const isDark = document.body.classList.contains('dark-mode');
         themeToggle.textContent = isDark ? i18n[currentLang].themeLight : i18n[currentLang].themeDark;
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        if (typeof DISQUS !== 'undefined') {
+            DISQUS.reset({
+                reload: true,
+                config: function () {
+                    this.page.url = window.location.href;
+                    this.page.identifier = 'whats-for-dinner';
+                    this.page.colorScheme = isDark ? 'dark' : 'light';
+                }
+            });
+        }
     });
 
     // Language
