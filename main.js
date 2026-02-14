@@ -136,6 +136,26 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: { ko: '빠에야', en: 'Paella' }, emoji: '🥘', desc: { ko: '스페인 발렌시아 지방의 해산물 사프란 쌀요리', en: 'Spanish saffron rice with seafood, a Valencia specialty' }, type: 'world', mood: ['happy', 'cold'], people: ['couple', 'group'], tags: { ko: ['스페인', '쌀요리', '해산물'], en: ['Spanish', 'Rice', 'Seafood'] }, image: 'https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600&h=400&fit=crop' },
         { name: { ko: '퓨전 포케', en: 'Poke Bowl' }, emoji: '🐟', desc: { ko: '하와이식 생선회 덮밥, 아보카도와 특제 소스', en: 'Hawaiian raw fish rice bowl with avocado & sesame dressing' }, type: 'world', mood: ['hot', 'happy'], people: ['solo'], tags: { ko: ['하와이', '생선회', '건강식'], en: ['Hawaiian', 'Raw Fish', 'Healthy'] }, image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop' },
         { name: { ko: '봉골레', en: 'Spaghetti Vongole' }, emoji: '🍝', desc: { ko: '이탈리아식 바지락 스파게티, 화이트와인 소스', en: 'Italian clam spaghetti in white wine, garlic & parsley sauce' }, type: 'world', mood: ['happy'], people: ['solo', 'couple'], tags: { ko: ['이탈리아', '해산물', '파스타'], en: ['Italian', 'Seafood', 'Pasta'] }, image: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=600&h=400&fit=crop' },
+        // 추가 한식 3가지
+        { name: { ko: '갈비탕', en: 'Galbitang' }, emoji: '🍖', desc: { ko: '소갈비를 푹 고아 만든 맑고 깊은 국물', en: 'Clear beef short rib soup simmered to perfection' }, type: 'korean', mood: ['cold', 'tired'], people: ['solo', 'couple'], tags: { ko: ['국물요리', '보양식', '고기'], en: ['Soup', 'Restorative', 'Beef'] }, image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&h=400&fit=crop' },
+        { name: { ko: '순두부찌개', en: 'Sundubu Jjigae' }, emoji: '🫕', desc: { ko: '부드러운 순두부와 매콤한 양념의 뜨끈한 찌개', en: 'Spicy soft tofu stew with egg and seafood' }, type: 'korean', mood: ['cold', 'stressed'], people: ['solo', 'couple'], tags: { ko: ['매운맛', '국물요리', '두부'], en: ['Spicy', 'Soup', 'Tofu'] }, image: 'https://images.unsplash.com/photo-1583187855778-1ea2c2e0e3b8?w=600&h=400&fit=crop' },
+        { name: { ko: '잡채', en: 'Japchae' }, emoji: '🍜', desc: { ko: '당면과 다양한 채소를 달콤하게 볶은 명절 요리', en: 'Sweet potato glass noodles stir-fried with vegetables & beef' }, type: 'korean', mood: ['happy'], people: ['couple', 'group'], tags: { ko: ['명절음식', '달콤한맛', '면요리'], en: ['Holiday', 'Sweet', 'Noodles'] }, image: 'https://images.unsplash.com/photo-1580651214613-f4692d6d138e?w=600&h=400&fit=crop' },
+        // 추가 중식 3가지
+        { name: { ko: '깐풍기', en: 'Kanpunggi' }, emoji: '🍗', desc: { ko: '바삭한 닭튀김에 매콤달콤한 소스를 버무린 요리', en: 'Crispy fried chicken tossed in sweet & spicy garlic sauce' }, type: 'chinese', mood: ['happy', 'stressed'], people: ['couple', 'group'], tags: { ko: ['튀김', '매운맛', '닭고기'], en: ['Fried', 'Spicy', 'Chicken'] }, image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=600&h=400&fit=crop' },
+        { name: { ko: '양장피', en: 'Yangjangpi' }, emoji: '🥗', desc: { ko: '해산물과 채소를 겨자소스에 버무린 중화 냉채', en: 'Chinese cold platter with seafood, veggies & mustard dressing' }, type: 'chinese', mood: ['hot', 'happy'], people: ['couple', 'group'], tags: { ko: ['냉채', '해산물', '상큼한맛'], en: ['Cold Dish', 'Seafood', 'Refreshing'] }, image: 'https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=600&h=400&fit=crop' },
+        { name: { ko: '볶음밥', en: 'Chinese Fried Rice' }, emoji: '🍳', desc: { ko: '강한 불에서 빠르게 볶아낸 고소한 중화 볶음밥', en: 'Wok-fried rice with egg, vegetables & savory soy seasoning' }, type: 'chinese', mood: ['tired', 'happy'], people: ['solo'], tags: { ko: ['간편식', '볶음', '밥요리'], en: ['Quick', 'Stir-fried', 'Rice'] }, image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&h=400&fit=crop' },
+        // 추가 일식 3가지
+        { name: { ko: '오코노미야키', en: 'Okonomiyaki' }, emoji: '🥞', desc: { ko: '일본식 철판 부침개, 소스와 가쓰오부시 토핑', en: 'Japanese savory pancake topped with special sauce & bonito flakes' }, type: 'japanese', mood: ['happy', 'tired'], people: ['solo', 'couple'], tags: { ko: ['철판요리', '간식', '오사카'], en: ['Griddle', 'Snack', 'Osaka'] }, image: 'https://images.unsplash.com/photo-1638252827049-5a67e38c0e64?w=600&h=400&fit=crop' },
+        { name: { ko: '야키토리', en: 'Yakitori' }, emoji: '🍢', desc: { ko: '숯불에 구운 일본식 닭꼬치, 소금 또는 타레 소스', en: 'Charcoal-grilled chicken skewers with salt or tare glaze' }, type: 'japanese', mood: ['happy', 'stressed'], people: ['solo', 'couple', 'group'], tags: { ko: ['꼬치', '숯불구이', '이자카야'], en: ['Skewered', 'Grilled', 'Izakaya'] }, image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=600&h=400&fit=crop' },
+        { name: { ko: '규동', en: 'Gyudon' }, emoji: '🥩', desc: { ko: '달콤짭짤한 양념 소고기를 올린 일본식 덮밥', en: 'Japanese beef rice bowl with sweet soy-braised onions' }, type: 'japanese', mood: ['tired', 'happy'], people: ['solo'], tags: { ko: ['덮밥', '간편식', '소고기'], en: ['Rice Bowl', 'Quick', 'Beef'] }, image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&h=400&fit=crop' },
+        // 추가 양식 3가지
+        { name: { ko: '피시앤칩스', en: 'Fish & Chips' }, emoji: '🐟', desc: { ko: '영국식 바삭한 생선튀김과 감자튀김', en: 'British classic — crispy battered fish with golden chips' }, type: 'western', mood: ['happy', 'tired'], people: ['solo', 'couple'], tags: { ko: ['영국', '튀김', '감자'], en: ['British', 'Fried', 'Potato'] }, image: 'https://images.unsplash.com/photo-1579208030886-b1715a2e1ee6?w=600&h=400&fit=crop' },
+        { name: { ko: '맥앤치즈', en: 'Mac & Cheese' }, emoji: '🧀', desc: { ko: '진한 치즈소스에 버무린 미국식 마카로니', en: 'Creamy American macaroni smothered in melted cheese sauce' }, type: 'western', mood: ['stressed', 'cold'], people: ['solo', 'couple'], tags: { ko: ['치즈', '미국', '간편식'], en: ['Cheesy', 'American', 'Comfort'] }, image: 'https://images.unsplash.com/photo-1543339494-b4cd4f7ba686?w=600&h=400&fit=crop' },
+        { name: { ko: '클럽 샌드위치', en: 'Club Sandwich' }, emoji: '🥪', desc: { ko: '토스트 사이에 닭고기, 베이컨, 야채를 겹겹이 쌓은 샌드위치', en: 'Triple-decker toasted sandwich with chicken, bacon & veggies' }, type: 'western', mood: ['happy', 'tired'], people: ['solo'], tags: { ko: ['샌드위치', '간편식', '브런치'], en: ['Sandwich', 'Quick', 'Brunch'] }, image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=600&h=400&fit=crop' },
+        // 추가 세계음식 3가지
+        { name: { ko: '톰얌꿍', en: 'Tom Yum Goong' }, emoji: '🍲', desc: { ko: '태국식 새우가 들어간 매콤새콤한 국물 요리', en: 'Thai hot & sour shrimp soup with lemongrass & galangal' }, type: 'world', mood: ['cold', 'stressed'], people: ['solo', 'couple'], tags: { ko: ['태국', '매운맛', '해산물'], en: ['Thai', 'Spicy', 'Seafood'] }, image: 'https://images.unsplash.com/photo-1548943487-a2e4e43b4853?w=600&h=400&fit=crop' },
+        { name: { ko: '딤섬', en: 'Dim Sum' }, emoji: '🥟', desc: { ko: '홍콩식 다양한 찐만두와 소형 요리 모음', en: 'Hong Kong-style steamed dumplings & bite-sized delicacies' }, type: 'world', mood: ['happy'], people: ['couple', 'group'], tags: { ko: ['홍콩', '만두', '브런치'], en: ['Hong Kong', 'Dumplings', 'Brunch'] }, image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&h=400&fit=crop' },
+        { name: { ko: '비리야니', en: 'Biryani' }, emoji: '🍛', desc: { ko: '인도식 향신료 쌀밥에 고기를 켜켜이 쌓아 지은 요리', en: 'Indian layered spiced rice & meat dish cooked in aromatic herbs' }, type: 'world', mood: ['cold', 'happy'], people: ['couple', 'group'], tags: { ko: ['인도', '향신료', '쌀요리'], en: ['Indian', 'Spiced', 'Rice'] }, image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&h=400&fit=crop' },
     ];
 
     let currentLang = localStorage.getItem('lang') || 'ko';
@@ -215,6 +235,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return active ? active.dataset.value : null;
     }
 
+    // Shuffle queue for equal probability — every item appears once before repeating
+    let shuffleQueue = [];
+    let lastFilterKey = '';
+
+    function shuffleArray(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
     function recommend() {
         const mood = getSelected('mood-options');
         const people = getSelected('people-options');
@@ -227,7 +260,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (type && type !== 'any') filtered = filtered.filter(m => m.type === type);
         if (filtered.length === 0) filtered = [...menus];
 
-        const pick = filtered[Math.floor(Math.random() * filtered.length)];
+        // Reset shuffle queue when filters change or queue is empty
+        const filterKey = `${mood}-${people}-${type}`;
+        if (filterKey !== lastFilterKey || shuffleQueue.length === 0) {
+            shuffleQueue = shuffleArray(filtered);
+            lastFilterKey = filterKey;
+        }
+
+        const pick = shuffleQueue.pop();
 
         resultDiv.innerHTML = `<div class="loading"><div class="spinner"></div><br>${t.loading}</div>`;
 
