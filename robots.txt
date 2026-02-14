@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://clozer1.github.io/final-try/sitemap.xml
+Sitemap: https://theclozer12.github.io/The-Clozer1/sitemap.xml
