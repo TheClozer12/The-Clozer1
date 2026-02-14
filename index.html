@@ -47,7 +47,7 @@
                     <span class="btn-sparkle">✨</span>
                 </button>
                 <button id="camera-btn" class="cta-btn camera-cta">
-                    📸 얼굴로 분석하기
+                    📸 셀카로 분석하기
                 </button>
             </div>
 
@@ -66,23 +66,42 @@
         </div>
     </section>
 
-    <!-- Camera Page -->
+    <!-- Photo Upload Page -->
     <section id="camera" class="page">
         <div class="camera-container">
             <div class="camera-header">
                 <div class="camera-emoji">📸</div>
                 <h2 class="camera-title">얼굴로 대화유형 분석</h2>
-                <p class="camera-sub">카메라를 보고 자연스러운 표정을 지어주세요</p>
+                <p class="camera-sub">셀카 사진을 올려주세요! AI가 표정을 분석해요</p>
             </div>
 
-            <div class="camera-view-wrap">
-                <div class="camera-view" id="camera-view">
-                    <div class="camera-placeholder" id="camera-placeholder">
-                        <span>📷</span>
-                        <p>카메라 로딩 중...</p>
-                    </div>
+            <!-- Selfie Guide -->
+            <div class="selfie-guide">
+                <p class="guide-label">이렇게 찍어주세요!</p>
+                <div class="guide-image-wrap">
+                    <img src="selfie-guide.png" alt="셀카 가이드" class="guide-image">
                 </div>
-                <div class="camera-frame"></div>
+                <div class="guide-tips">
+                    <span class="guide-tip">정면 얼굴</span>
+                    <span class="guide-tip">밝은 조명</span>
+                    <span class="guide-tip">자연스러운 표정</span>
+                </div>
+            </div>
+
+            <!-- Upload Area -->
+            <div class="upload-area" id="upload-area">
+                <div class="upload-placeholder" id="upload-placeholder">
+                    <span class="upload-icon">🖼️</span>
+                    <p class="upload-text">사진첩에서 셀카를 선택해주세요</p>
+                    <label class="upload-btn-label" for="photo-input">
+                        📂 사진 업로드하기
+                    </label>
+                    <input type="file" id="photo-input" accept="image/*" hidden>
+                </div>
+                <div class="upload-preview" id="upload-preview" style="display:none;">
+                    <img id="preview-img" alt="업로드된 사진">
+                    <button class="change-photo-btn" id="change-photo-btn">🔄 다른 사진</button>
+                </div>
             </div>
 
             <div class="camera-predictions" id="camera-predictions" style="display:none;">
@@ -93,7 +112,7 @@
             </div>
 
             <button id="capture-btn" class="cta-btn capture-btn" style="display:none;">
-                📸 이 표정으로 분석하기!
+                🔍 이 사진으로 분석하기!
             </button>
 
             <button class="back-btn" id="camera-back-btn">← 돌아가기</button>

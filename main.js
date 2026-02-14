@@ -168,8 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentQ = 0;
     const answers = new Array(10).fill(null);
     let tmModel = null;
-    let webcam = null;
-    let isCameraRunning = false;
 
     // ==================== DOM ELEMENTS ====================
     const pages = {
@@ -185,8 +183,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const cameraBackBtn = document.getElementById('camera-back-btn');
     const captureBtn = document.getElementById('capture-btn');
     const cameraPredictions = document.getElementById('camera-predictions');
-    const cameraPlaceholder = document.getElementById('camera-placeholder');
-    const cameraView = document.getElementById('camera-view');
+    const photoInput = document.getElementById('photo-input');
+    const uploadPlaceholder = document.getElementById('upload-placeholder');
+    const uploadPreview = document.getElementById('upload-preview');
+    const previewImg = document.getElementById('preview-img');
+    const changePhotoBtn = document.getElementById('change-photo-btn');
     const progressBar = document.getElementById('progress-bar');
     const progressText = document.getElementById('progress-text');
     const questionText = document.getElementById('question-text');
@@ -496,42 +497,51 @@ document.addEventListener('DOMContentLoaded', () => {
         showPage('landing');
     }
 
-    // ==================== CAMERA / TEACHABLE MACHINE ====================
-    async function initCamera() {
+    // ==================== PHOTO UPLOAD / TEACHABLE MACHINE ====================
+    let uploadedImage = null;
+
+    async function loadTMModel() {
+        if (tmModel) return;
         try {
-            // Load Teachable Machine model
             const modelURL = TM_MODEL_URL + 'model.json';
             const metadataURL = TM_MODEL_URL + 'metadata.json';
             tmModel = await tmImage.load(modelURL, metadataURL);
-
-            // Setup webcam
-            const flip = true;
-            webcam = new tmImage.Webcam(280, 280, flip);
-            await webcam.setup();
-            await webcam.play();
-            isCameraRunning = true;
-
-            // Replace placeholder with webcam canvas
-            cameraPlaceholder.style.display = 'none';
-            cameraView.appendChild(webcam.canvas);
-            cameraPredictions.style.display = 'block';
-            captureBtn.style.display = 'inline-flex';
-
-            // Start prediction loop
-            predictLoop();
         } catch (err) {
-            console.error('Camera init error:', err);
-            cameraPlaceholder.innerHTML = '<span>⚠️</span><p>카메라를 사용할 수 없어요.<br>카메라 권한을 확인해주세요.</p>';
+            console.error('Model load error:', err);
         }
     }
 
-    async function predictLoop() {
-        if (!isCameraRunning || !webcam || !tmModel) return;
-        webcam.update();
-        const predictions = await tmModel.predict(webcam.canvas);
+    function handlePhotoUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
 
-        let maxProb = 0;
-        let maxClass = '';
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            previewImg.src = evt.target.result;
+            uploadPlaceholder.style.display = 'none';
+            uploadPreview.style.display = 'block';
+            captureBtn.style.display = 'inline-flex';
+            uploadedImage = previewImg;
+
+            // Load model in background and run prediction
+            loadTMModel().then(() => {
+                if (tmModel) predictFromImage(previewImg);
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+
+    async function predictFromImage(imgEl) {
+        if (!tmModel) return;
+
+        // Wait for image to load fully
+        await new Promise(resolve => {
+            if (imgEl.complete) resolve();
+            else imgEl.onload = resolve;
+        });
+
+        const predictions = await tmModel.predict(imgEl);
+        cameraPredictions.style.display = 'block';
 
         predictions.forEach(pred => {
             const pct = Math.round(pred.probability * 100);
@@ -541,49 +551,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 row.querySelector('.pred-pct').textContent = pct + '%';
                 row.classList.toggle('top', pred.probability > 0.5);
             }
-            if (pred.probability > maxProb) {
-                maxProb = pred.probability;
-                maxClass = pred.className;
-            }
         });
-
-        if (isCameraRunning) {
-            requestAnimationFrame(predictLoop);
-        }
     }
 
-    function stopCamera() {
-        isCameraRunning = false;
-        if (webcam) {
-            webcam.stop();
-            webcam = null;
-        }
-    }
+    function analyzeUploadedPhoto() {
+        if (!uploadedImage) return;
 
-    function captureAndAnalyze() {
-        if (!tmModel) return;
-
-        // Get final predictions
-        const predictions = [];
-        const predRows = document.querySelectorAll('.pred-row');
-        predRows.forEach(row => {
-            const label = row.id.replace('pred-', '');
-            const pct = parseInt(row.querySelector('.pred-pct').textContent);
-            predictions.push({ className: label, probability: pct / 100 });
-        });
-
-        stopCamera();
-
-        // Map TM classes to quiz types and compute scores
+        // Get current predictions from UI
         const scores = {
             '주도형': 0, '경청형': 0, '조율형': 0,
             '논리형': 0, '공감형': 0, '분위기형': 0
         };
 
-        predictions.forEach(pred => {
-            const mappedType = tmClassMap[pred.className];
+        const predRows = document.querySelectorAll('.pred-row');
+        predRows.forEach(row => {
+            const label = row.id.replace('pred-', '');
+            const pct = parseInt(row.querySelector('.pred-pct').textContent);
+            const mappedType = tmClassMap[label];
             if (mappedType) {
-                scores[mappedType] = Math.round(pred.probability * 20);
+                scores[mappedType] = Math.round((pct / 100) * 20);
             }
         });
 
@@ -612,6 +598,21 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             showResultFromCamera(scores);
         }, 2600);
+    }
+
+    function resetUploadUI() {
+        uploadPlaceholder.style.display = 'block';
+        uploadPreview.style.display = 'none';
+        captureBtn.style.display = 'none';
+        cameraPredictions.style.display = 'none';
+        photoInput.value = '';
+        uploadedImage = null;
+        // Reset prediction bars
+        document.querySelectorAll('.pred-row').forEach(row => {
+            row.querySelector('.pred-bar-fill').style.width = '0%';
+            row.querySelector('.pred-pct').textContent = '0%';
+            row.classList.remove('top');
+        });
     }
 
     function showResultFromCamera(scores) {
@@ -707,22 +708,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cameraBtn.addEventListener('click', () => {
         showPage('camera');
-        initCamera();
+        loadTMModel(); // Preload model
     });
 
     cameraBackBtn.addEventListener('click', () => {
-        stopCamera();
+        resetUploadUI();
         showPage('landing');
-        // Reset camera UI
-        cameraPlaceholder.style.display = 'block';
-        cameraPlaceholder.innerHTML = '<span>📷</span><p>카메라 로딩 중...</p>';
-        cameraPredictions.style.display = 'none';
-        captureBtn.style.display = 'none';
-        const canvas = cameraView.querySelector('canvas');
-        if (canvas) canvas.remove();
     });
 
-    captureBtn.addEventListener('click', captureAndAnalyze);
+    photoInput.addEventListener('change', handlePhotoUpload);
+
+    changePhotoBtn.addEventListener('click', () => {
+        resetUploadUI();
+        photoInput.click();
+    });
+
+    captureBtn.addEventListener('click', analyzeUploadedPhoto);
 
     backBtn.addEventListener('click', () => {
         if (currentQ > 0) {
