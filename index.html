@@ -153,6 +153,59 @@
         <div class="result-container" id="result-container"></div>
     </section>
 
+    <!-- Comments & Contact (always visible at bottom) -->
+    <footer class="footer-sections">
+        <!-- Comments Section (Disqus) -->
+        <section class="comments-section" id="comments-section">
+            <h2 class="section-heading">💬 댓글 남기기</h2>
+            <p class="section-desc">테스트 결과, 후기, 의견을 자유롭게 남겨주세요!</p>
+            <div id="disqus_thread"></div>
+            <script>
+                function getDisqusColorScheme() {
+                    return document.body.classList.contains('light-mode') ? 'light' : 'dark';
+                }
+                var disqus_config = function () {
+                    this.page.url = window.location.href;
+                    this.page.identifier = 'talk-type-test';
+                    this.page.colorScheme = getDisqusColorScheme();
+                };
+                (function() {
+                    var d = document, s = d.createElement('script');
+                    s.src = 'https://clozer1-1.disqus.com/embed.js';
+                    s.setAttribute('data-timestamp', +new Date());
+                    (d.head || d.body).appendChild(s);
+                })();
+            </script>
+            <noscript>댓글을 보려면 JavaScript를 활성화해주세요.</noscript>
+        </section>
+
+        <!-- Contact Form (Formspree) -->
+        <section class="contact-section" id="contact-section">
+            <h2 class="section-heading">📩 제휴 문의</h2>
+            <p class="section-desc">비즈니스 제휴, 광고, 협업 등 문의사항을 남겨주세요.</p>
+            <form id="contact-form" action="https://formspree.io/f/xqedpwda" method="POST">
+                <div class="form-group">
+                    <label for="contact-name">이름 / 회사명</label>
+                    <input type="text" id="contact-name" name="name" placeholder="홍길동 / (주)클로저" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact-email">이메일</label>
+                    <input type="email" id="contact-email" name="email" placeholder="example@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact-message">문의 내용</label>
+                    <textarea id="contact-message" name="message" rows="4" placeholder="문의 내용을 입력해주세요..." required></textarea>
+                </div>
+                <button type="submit" class="contact-submit-btn">📨 문의 보내기</button>
+            </form>
+            <p id="contact-success" class="success-msg" style="display:none;">✅ 문의가 성공적으로 전송되었습니다!</p>
+        </section>
+
+        <div class="footer-bottom">
+            <p>© 2025 The Closer. All rights reserved.</p>
+        </div>
+    </footer>
+
     <script defer type="text/javascript" src="/main.js"></script>
 </body>
 </html>
