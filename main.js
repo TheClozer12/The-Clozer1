@@ -226,6 +226,17 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.values(pages).forEach(p => p.classList.remove('active'));
         pages[pageId].classList.add('active');
         window.scrollTo(0, 0);
+
+        // Hide info sections when not on landing page
+        const infoSections = document.querySelectorAll('.info-section');
+        const footer = document.querySelector('.footer-sections');
+        if (pageId === 'landing') {
+            infoSections.forEach(s => s.style.display = '');
+            if (footer) footer.style.display = '';
+        } else {
+            infoSections.forEach(s => s.style.display = 'none');
+            if (footer) footer.style.display = 'none';
+        }
     }
 
     // ==================== QUIZ LOGIC ====================
