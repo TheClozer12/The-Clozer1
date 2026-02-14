@@ -820,6 +820,188 @@ body {
     flex-shrink: 0;
 }
 
+/* ==================== LANDING BUTTONS ==================== */
+.landing-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.camera-cta {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.camera-cta:hover {
+    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4);
+}
+
+/* ==================== CAMERA PAGE ==================== */
+.camera-container {
+    width: 100%;
+    max-width: 500px;
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.6s ease;
+}
+
+.camera-header {
+    margin-bottom: 1.5rem;
+}
+
+.camera-emoji {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+.camera-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+}
+
+.camera-sub {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.camera-view-wrap {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin: 0 auto 1.5rem;
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.camera-view {
+    width: 100%;
+    height: 100%;
+    background: #111;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.camera-view canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    border-radius: 24px;
+}
+
+.camera-frame {
+    position: absolute;
+    inset: 0;
+    border: 3px solid var(--accent);
+    border-radius: 24px;
+    pointer-events: none;
+    box-shadow: 0 0 30px var(--accent-glow);
+}
+
+.camera-placeholder {
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.camera-placeholder span {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.camera-placeholder p {
+    font-size: 0.85rem;
+}
+
+/* Prediction bars */
+.camera-predictions {
+    margin-bottom: 1.5rem;
+}
+
+.pred-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.pred-label {
+    width: 75px;
+    text-align: right;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    font-weight: 600;
+}
+
+.pred-bar-bg {
+    flex: 1;
+    height: 10px;
+    background: var(--score-bar-bg);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.pred-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    transition: width 0.15s ease;
+    width: 0%;
+}
+
+.pred-row.top .pred-bar-fill {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.pred-row.top .pred-label,
+.pred-row.top .pred-pct {
+    color: #fbbf24;
+}
+
+.pred-pct {
+    width: 36px;
+    text-align: left;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    font-weight: 600;
+}
+
+.capture-btn {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    margin-bottom: 0.5rem;
+}
+
+.capture-btn:hover {
+    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4) !important;
+}
+
+/* Camera result badge */
+.result-method-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.2));
+    color: #fbbf24;
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.result-method-badge.quiz-badge {
+    background: var(--accent-bg);
+    color: var(--accent-light);
+    border-color: var(--accent-border);
+}
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 500px) {
     .landing-title { font-size: 1.9rem; }
@@ -830,4 +1012,5 @@ body {
     .share-buttons { flex-direction: column; }
     .share-btn { justify-content: center; }
     .deco-3, .deco-5, .deco-7 { display: none; }
+    .camera-view-wrap { width: 250px; height: 250px; }
 }

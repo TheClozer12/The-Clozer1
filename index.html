@@ -13,6 +13,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link href='/style.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 </head>
 <body>
     <!-- Theme Toggle -->
@@ -36,12 +38,19 @@
             <div class="landing-character">🗣️</div>
             <div class="landing-badge">3분 테스트</div>
             <h1 class="landing-title">너는 대화할 때<br>어떤 사람이야?</h1>
-            <p class="landing-sub">10개 질문으로 알아보는 나의 대화 유형</p>
-            <button id="start-btn" class="cta-btn">
-                <span class="btn-sparkle">✨</span>
-                테스트 시작하기
-                <span class="btn-sparkle">✨</span>
-            </button>
+            <p class="landing-sub">질문에 답하거나, 얼굴 사진으로 바로 분석!</p>
+
+            <div class="landing-buttons">
+                <button id="start-btn" class="cta-btn">
+                    <span class="btn-sparkle">✨</span>
+                    질문 테스트 하기
+                    <span class="btn-sparkle">✨</span>
+                </button>
+                <button id="camera-btn" class="cta-btn camera-cta">
+                    📸 얼굴로 분석하기
+                </button>
+            </div>
+
             <div class="participant-count" id="participant-count"></div>
             <div class="type-preview">
                 <p class="preview-label">총 6가지 유형 중 나는?</p>
@@ -54,6 +63,40 @@
                     <span title="분위기형">🎉</span>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Camera Page -->
+    <section id="camera" class="page">
+        <div class="camera-container">
+            <div class="camera-header">
+                <div class="camera-emoji">📸</div>
+                <h2 class="camera-title">얼굴로 대화유형 분석</h2>
+                <p class="camera-sub">카메라를 보고 자연스러운 표정을 지어주세요</p>
+            </div>
+
+            <div class="camera-view-wrap">
+                <div class="camera-view" id="camera-view">
+                    <div class="camera-placeholder" id="camera-placeholder">
+                        <span>📷</span>
+                        <p>카메라 로딩 중...</p>
+                    </div>
+                </div>
+                <div class="camera-frame"></div>
+            </div>
+
+            <div class="camera-predictions" id="camera-predictions" style="display:none;">
+                <div class="pred-row" id="pred-리더형"><span class="pred-label">🎯 리더형</span><div class="pred-bar-bg"><div class="pred-bar-fill"></div></div><span class="pred-pct">0%</span></div>
+                <div class="pred-row" id="pred-따뜻형"><span class="pred-label">💛 따뜻형</span><div class="pred-bar-bg"><div class="pred-bar-fill"></div></div><span class="pred-pct">0%</span></div>
+                <div class="pred-row" id="pred-분석형"><span class="pred-label">💡 분석형</span><div class="pred-bar-bg"><div class="pred-bar-fill"></div></div><span class="pred-pct">0%</span></div>
+                <div class="pred-row" id="pred-에너지형"><span class="pred-label">🎉 에너지형</span><div class="pred-bar-bg"><div class="pred-bar-fill"></div></div><span class="pred-pct">0%</span></div>
+            </div>
+
+            <button id="capture-btn" class="cta-btn capture-btn" style="display:none;">
+                📸 이 표정으로 분석하기!
+            </button>
+
+            <button class="back-btn" id="camera-back-btn">← 돌아가기</button>
         </div>
     </section>
 

@@ -152,19 +152,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ==================== TEACHABLE MACHINE CONFIG ====================
+    // Teachable Machine 모델 URL (본인의 모델 URL로 교체하세요)
+    const TM_MODEL_URL = 'https://teachablemachine.withgoogle.com/models/bxGGMwu9e/';
+
+    // Teachable Machine 클래스 → 대화유형 매핑
+    const tmClassMap = {
+        '리더형': '주도형',
+        '따뜻형': '공감형',
+        '분석형': '논리형',
+        '에너지형': '분위기형'
+    };
+
     // ==================== STATE ====================
     let currentQ = 0;
     const answers = new Array(10).fill(null);
+    let tmModel = null;
+    let webcam = null;
+    let isCameraRunning = false;
 
     // ==================== DOM ELEMENTS ====================
     const pages = {
         landing: document.getElementById('landing'),
+        camera: document.getElementById('camera'),
         quiz: document.getElementById('quiz'),
         loading: document.getElementById('loading'),
         result: document.getElementById('result')
     };
 
     const startBtn = document.getElementById('start-btn');
+    const cameraBtn = document.getElementById('camera-btn');
+    const cameraBackBtn = document.getElementById('camera-back-btn');
+    const captureBtn = document.getElementById('capture-btn');
+    const cameraPredictions = document.getElementById('camera-predictions');
+    const cameraPlaceholder = document.getElementById('camera-placeholder');
+    const cameraView = document.getElementById('camera-view');
     const progressBar = document.getElementById('progress-bar');
     const progressText = document.getElementById('progress-text');
     const questionText = document.getElementById('question-text');
@@ -474,6 +496,207 @@ document.addEventListener('DOMContentLoaded', () => {
         showPage('landing');
     }
 
+    // ==================== CAMERA / TEACHABLE MACHINE ====================
+    async function initCamera() {
+        try {
+            // Load Teachable Machine model
+            const modelURL = TM_MODEL_URL + 'model.json';
+            const metadataURL = TM_MODEL_URL + 'metadata.json';
+            tmModel = await tmImage.load(modelURL, metadataURL);
+
+            // Setup webcam
+            const flip = true;
+            webcam = new tmImage.Webcam(280, 280, flip);
+            await webcam.setup();
+            await webcam.play();
+            isCameraRunning = true;
+
+            // Replace placeholder with webcam canvas
+            cameraPlaceholder.style.display = 'none';
+            cameraView.appendChild(webcam.canvas);
+            cameraPredictions.style.display = 'block';
+            captureBtn.style.display = 'inline-flex';
+
+            // Start prediction loop
+            predictLoop();
+        } catch (err) {
+            console.error('Camera init error:', err);
+            cameraPlaceholder.innerHTML = '<span>⚠️</span><p>카메라를 사용할 수 없어요.<br>카메라 권한을 확인해주세요.</p>';
+        }
+    }
+
+    async function predictLoop() {
+        if (!isCameraRunning || !webcam || !tmModel) return;
+        webcam.update();
+        const predictions = await tmModel.predict(webcam.canvas);
+
+        let maxProb = 0;
+        let maxClass = '';
+
+        predictions.forEach(pred => {
+            const pct = Math.round(pred.probability * 100);
+            const row = document.getElementById('pred-' + pred.className);
+            if (row) {
+                row.querySelector('.pred-bar-fill').style.width = pct + '%';
+                row.querySelector('.pred-pct').textContent = pct + '%';
+                row.classList.toggle('top', pred.probability > 0.5);
+            }
+            if (pred.probability > maxProb) {
+                maxProb = pred.probability;
+                maxClass = pred.className;
+            }
+        });
+
+        if (isCameraRunning) {
+            requestAnimationFrame(predictLoop);
+        }
+    }
+
+    function stopCamera() {
+        isCameraRunning = false;
+        if (webcam) {
+            webcam.stop();
+            webcam = null;
+        }
+    }
+
+    function captureAndAnalyze() {
+        if (!tmModel) return;
+
+        // Get final predictions
+        const predictions = [];
+        const predRows = document.querySelectorAll('.pred-row');
+        predRows.forEach(row => {
+            const label = row.id.replace('pred-', '');
+            const pct = parseInt(row.querySelector('.pred-pct').textContent);
+            predictions.push({ className: label, probability: pct / 100 });
+        });
+
+        stopCamera();
+
+        // Map TM classes to quiz types and compute scores
+        const scores = {
+            '주도형': 0, '경청형': 0, '조율형': 0,
+            '논리형': 0, '공감형': 0, '분위기형': 0
+        };
+
+        predictions.forEach(pred => {
+            const mappedType = tmClassMap[pred.className];
+            if (mappedType) {
+                scores[mappedType] = Math.round(pred.probability * 20);
+            }
+        });
+
+        // Give unmapped types a small base score
+        Object.keys(scores).forEach(key => {
+            if (scores[key] === 0) scores[key] = Math.floor(Math.random() * 3) + 1;
+        });
+
+        // Show loading then result
+        showPage('loading');
+        loadingBar.style.width = '0%';
+        loadingText.textContent = '표정 데이터 분석 중...';
+        loadingEmoji.textContent = '📸';
+
+        setTimeout(() => { loadingBar.style.width = '40%'; }, 100);
+        setTimeout(() => {
+            loadingText.textContent = 'AI가 유형 매칭 중...';
+            loadingEmoji.textContent = '🤖';
+            loadingBar.style.width = '75%';
+        }, 1000);
+        setTimeout(() => {
+            loadingText.textContent = '분석 완료!';
+            loadingEmoji.textContent = '🎉';
+            loadingBar.style.width = '100%';
+        }, 2000);
+        setTimeout(() => {
+            showResultFromCamera(scores);
+        }, 2600);
+    }
+
+    function showResultFromCamera(scores) {
+        showPage('result');
+        const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+        const winner = sorted[0][0];
+        const data = typeData[winner];
+        const maxScore = Math.max(...Object.values(scores), 1);
+
+        const scoreChartHTML = sorted
+            .map(([type, score]) => {
+                const pct = Math.round((score / maxScore) * 100);
+                const isTop = type === winner;
+                return `
+                    <div class="score-row">
+                        <span class="score-label">${typeData[type].emoji} ${type}</span>
+                        <div class="score-bar-bg">
+                            <div class="score-bar-fill ${isTop ? 'top' : ''}" style="width: 0%" data-width="${pct}%"></div>
+                        </div>
+                        <span class="score-value">${score}</span>
+                    </div>
+                `;
+            }).join('');
+
+        resultContainer.innerHTML = `
+            <div class="result-confetti">🎊 ✨ 🎊</div>
+            <div class="result-card">
+                <div class="result-method-badge">📸 AI 얼굴 분석 결과</div>
+                <p class="result-label">너의 대화유형은</p>
+                <div class="result-emoji">${data.emoji}</div>
+                <h2 class="result-type-name">${data.name}</h2>
+                <p class="result-catchphrase">${data.catchphrase}</p>
+                <p class="result-desc">${data.desc}</p>
+                <div class="score-chart">${scoreChartHTML}</div>
+            </div>
+
+            <div class="share-section">
+                <p class="share-title">친구에게 공유하기</p>
+                <div class="share-buttons">
+                    <button class="share-btn kakao" id="share-kakao">💬 카카오톡</button>
+                    <button class="share-btn x" id="share-x">𝕏 공유하기</button>
+                    <button class="share-btn copy" id="share-copy">🔗 링크 복사</button>
+                </div>
+            </div>
+
+            <div class="traits-section">
+                <p class="traits-title">💪 나의 대화 강점</p>
+                ${data.strengths.map(s => `<div class="trait-item"><span>✅</span><span>${s}</span></div>`).join('')}
+            </div>
+
+            <div class="traits-section">
+                <p class="traits-title">⚡ 주의할 점</p>
+                ${data.weaknesses.map(w => `<div class="trait-item"><span>⚠️</span><span>${w}</span></div>`).join('')}
+            </div>
+
+            <div class="compat-section">
+                <p class="compat-title">💕 대화 궁합</p>
+                <div class="compat-row compat-good"><span>✅</span><span>잘 맞는 유형: ${data.goodMatch}</span></div>
+                <div class="compat-row compat-bad"><span>⛔</span><span>안 맞는 유형: ${data.badMatch}</span></div>
+            </div>
+
+            <div class="cta-section">
+                <p class="cta-section-text">${data.closerCTA}</p>
+                <a href="https://thecloser.co.kr" target="_blank" rel="noopener" class="cta-closer-btn">
+                    AI 대화 트레이닝 시작하기 →
+                </a>
+            </div>
+
+            <div class="retry-section">
+                <button class="retry-btn" id="retry-btn">🔄 테스트 다시 하기</button>
+            </div>
+        `;
+
+        setTimeout(() => {
+            resultContainer.querySelectorAll('.score-bar-fill').forEach(bar => {
+                bar.style.width = bar.dataset.width;
+            });
+        }, 100);
+
+        document.getElementById('share-kakao').addEventListener('click', shareKakao);
+        document.getElementById('share-x').addEventListener('click', () => shareX(data));
+        document.getElementById('share-copy').addEventListener('click', shareCopy);
+        document.getElementById('retry-btn').addEventListener('click', restart);
+    }
+
     // ==================== EVENT LISTENERS ====================
     startBtn.addEventListener('click', () => {
         showPage('quiz');
@@ -481,6 +704,25 @@ document.addEventListener('DOMContentLoaded', () => {
         answers.fill(null);
         renderQuestion();
     });
+
+    cameraBtn.addEventListener('click', () => {
+        showPage('camera');
+        initCamera();
+    });
+
+    cameraBackBtn.addEventListener('click', () => {
+        stopCamera();
+        showPage('landing');
+        // Reset camera UI
+        cameraPlaceholder.style.display = 'block';
+        cameraPlaceholder.innerHTML = '<span>📷</span><p>카메라 로딩 중...</p>';
+        cameraPredictions.style.display = 'none';
+        captureBtn.style.display = 'none';
+        const canvas = cameraView.querySelector('canvas');
+        if (canvas) canvas.remove();
+    });
+
+    captureBtn.addEventListener('click', captureAndAnalyze);
 
     backBtn.addEventListener('click', () => {
         if (currentQ > 0) {
