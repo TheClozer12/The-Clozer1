@@ -490,6 +490,49 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
+    // ==================== CONTACT FORM ====================
+    const contactForm = document.getElementById('contact-form');
+    const contactSuccess = document.getElementById('contact-success');
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = contactForm.querySelector('.contact-submit-btn');
+            submitBtn.textContent = '전송 중...';
+            submitBtn.disabled = true;
+
+            try {
+                const resp = await fetch(contactForm.action, {
+                    method: 'POST',
+                    body: new FormData(contactForm),
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (resp.ok) {
+                    contactForm.reset();
+                    contactForm.style.display = 'none';
+                    contactSuccess.style.display = 'block';
+                } else {
+                    showToast('전송에 실패했어요. 다시 시도해주세요.');
+                    submitBtn.textContent = '📨 문의 보내기';
+                    submitBtn.disabled = false;
+                }
+            } catch {
+                showToast('네트워크 오류가 발생했어요.');
+                submitBtn.textContent = '📨 문의 보내기';
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    // ==================== DISQUS THEME SYNC ====================
+    const themeObserver = new MutationObserver(() => {
+        if (window.DISQUS) {
+            window.DISQUS.reset({ reload: true });
+        }
+    });
+    themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
     // ==================== RESTART ====================
     function restart() {
         currentQ = 0;
