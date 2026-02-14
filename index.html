@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>대화유형 테스트 — 너는 대화할 때 어떤 사람이야?</title>
+    <meta name="description" content="10개 질문으로 알아보는 나의 대화 스타일. 3분이면 끝!">
+    <meta property="og:title" content="대화유형 테스트 — 너는 대화할 때 어떤 사람이야?">
+    <meta property="og:description" content="10개 질문으로 알아보는 나의 대화 스타일. 3분이면 끝!">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&h=630&fit=crop">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href='/style.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="테마 전환">🌙</button>
+
+    <!-- Floating cute decorations -->
+    <div class="floating-deco" aria-hidden="true">
+        <span class="deco deco-1">💬</span>
+        <span class="deco deco-2">✨</span>
+        <span class="deco deco-3">🫧</span>
+        <span class="deco deco-4">💭</span>
+        <span class="deco deco-5">🌟</span>
+        <span class="deco deco-6">🗨️</span>
+        <span class="deco deco-7">💫</span>
+        <span class="deco deco-8">🫶</span>
+    </div>
+
+    <!-- Landing Page -->
+    <section id="landing" class="page active">
+        <div class="landing-container">
+            <div class="landing-character">🗣️</div>
+            <div class="landing-badge">3분 테스트</div>
+            <h1 class="landing-title">너는 대화할 때<br>어떤 사람이야?</h1>
+            <p class="landing-sub">질문에 답하거나, 얼굴 사진으로 바로 분석!</p>
+
+            <div class="landing-buttons">
+                <button id="start-btn" class="cta-btn">
+                    <span class="btn-sparkle">✨</span>
+                    질문 테스트 하기
+                    <span class="btn-sparkle">✨</span>
+                </button>
+                <button id="camera-btn" class="cta-btn camera-cta">
+                    📸 얼굴로 분석하기
+                </button>
+            </div>
+
+            <div class="participant-count" id="participant-count"></div>
+            <div class="type-preview">
+                <p class="preview-label">총 6가지 유형 중 나는?</p>
+                <div class="preview-icons">
+                    <span title="주도형">🎯</span>
+                    <span title="경청형">👂</span>
+                    <span title="조율형">🤝</span>
+                    <span title="논리형">💡</span>
+                    <span title="공감형">💛</span>
+                    <span title="분위기형">🎉</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Camera Page -->
+    <section id="camera" class="page">
+        <div class="camera-container">
+            <div class="camera-header">
+                <div class="camera-emoji">📸</div>
+                <h2 class="camera-title">얼굴로 대화유형 분석</h2>
+                <p class="camera-sub">카메라를 보고 자연스러운 표정을 지어주세요</p>
+            </div>
+
+            <div class="camera-view-wrap">
+                <div class="camera-view" id="camera-view">
+                    <div class="camera-placeholder" id="camera-placeholder">
+                        <span>📷</span>
+                        <p>카메라 로딩 중...</p>
+                    </div>
+                </div>
+                <div class="camera-frame"></div>
+            </div>
+
+            <div class="camera-predictions" id="camera-predictions" style="display:none;">
+                <div class="pred-row" id="pred-리더형"><span class="pred-label">🎯 리더형</span><div class="pred-bar-bg"><div class="pred-bar-fill"></div></div><span class="pred-pct">0%</span></div>
+                <div class="pred-row" id="pred-따뜻형"><span class="pred-label">💛 따뜻형</span><div class="pred-bar-bg"><div class="pred-bar-fill"></div></div><span class="pred-pct">0%</span></div>
+                <div class="pred-row" id="pred-분석형"><span class="pred-label">💡 분석형</span><div class="pred-bar-bg"><div class="pred-bar-fill"></div></div><span class="pred-pct">0%</span></div>
+                <div class="pred-row" id="pred-에너지형"><span class="pred-label">🎉 에너지형</span><div class="pred-bar-bg"><div class="pred-bar-fill"></div></div><span class="pred-pct">0%</span></div>
+            </div>
+
+            <button id="capture-btn" class="cta-btn capture-btn" style="display:none;">
+                📸 이 표정으로 분석하기!
+            </button>
+
+            <button class="back-btn" id="camera-back-btn">← 돌아가기</button>
+        </div>
+    </section>
+
+    <!-- Question Page -->
+    <section id="quiz" class="page">
+        <div class="quiz-container">
+            <div class="quiz-character" id="quiz-character">🤔</div>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-text" id="progress-text">1/10</div>
+            <div class="question-area" id="question-area">
+                <p class="question-text" id="question-text"></p>
+                <div class="options" id="options"></div>
+            </div>
+            <button class="back-btn" id="back-btn" style="display:none;">← 이전</button>
+        </div>
+    </section>
+
+    <!-- Loading Page -->
+    <section id="loading" class="page">
+        <div class="loading-container">
+            <div class="loading-emoji-wrap">
+                <span class="loading-emoji" id="loading-emoji">🔍</span>
+            </div>
+            <p class="loading-text" id="loading-text">대화 패턴 분석 중...</p>
+            <div class="loading-bar-wrap">
+                <div class="loading-bar" id="loading-bar"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Result Page -->
+    <section id="result" class="page">
+        <div class="result-container" id="result-container"></div>
+    </section>
+
+    <script defer type="text/javascript" src="/main.js"></script>
+</body>
+</html>
