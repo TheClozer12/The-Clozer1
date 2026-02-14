@@ -1,321 +1,491 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('theme-toggle');
-    const langToggle = document.getElementById('lang-toggle');
-    const recommendButton = document.getElementById('recommend-button');
-    const resultDiv = document.getElementById('result');
-
-    // i18n translations
-    const i18n = {
-        ko: {
-            title: '🍽️ 오늘 저녁 뭐 먹지?',
-            subtitle: '기분과 상황을 알려주면 딱 맞는 저녁 메뉴를 추천해드려요!',
-            'label-mood': '기분',
-            'label-people': '식사 인원',
-            'label-type': '음식 종류',
-            'mood-happy': '기분 좋음',
-            'mood-tired': '피곤함',
-            'mood-stressed': '스트레스',
-            'mood-cold': '추움',
-            'mood-hot': '더움',
-            'people-solo': '혼밥',
-            'people-couple': '2인',
-            'people-group': '단체',
-            'type-korean': '한식',
-            'type-chinese': '중식',
-            'type-japanese': '일식',
-            'type-western': '양식',
-            'type-world': '세계음식',
-            'type-any': '아무거나',
-            recommend: '🍴 메뉴 추천 받기!',
-            loading: '메뉴 고르는 중...',
-            retry: '🔄 다른 메뉴 추천',
-            langBtn: '🌐 EN',
-            themeDark: '🌙',
-            themeLight: '☀️',
-            'contact-title': '📩 제휴 문의',
-            'contact-desc': '비즈니스 제휴, 광고, 협업 등 문의사항을 남겨주세요.',
-            'form-label-name': '이름 / 회사명',
-            'form-label-email': '이메일',
-            'form-label-message': '문의 내용',
-            'contact-submit': '📨 문의 보내기',
-            'contact-success': '✅ 문의가 성공적으로 전송되었습니다!',
-            'comments-title': '💬 댓글',
+    // ==================== DATA ====================
+    const questions = [
+        {
+            text: '친구가 갑자기 전화해서\n고민 상담을 시작했어. 넌?',
+            emoji: '📞',
+            options: [
+                { emoji: '😌', text: '일단 끝까지 들어본다', type: '경청형' },
+                { emoji: '💡', text: '바로 해결책을 제시한다', type: '주도형' }
+            ]
         },
-        en: {
-            title: '🍽️ What\'s for Dinner?',
-            subtitle: 'Tell us your mood and we\'ll recommend the perfect dinner!',
-            'label-mood': 'Mood',
-            'label-people': 'Party Size',
-            'label-type': 'Cuisine',
-            'mood-happy': 'Happy',
-            'mood-tired': 'Tired',
-            'mood-stressed': 'Stressed',
-            'mood-cold': 'Feeling Cold',
-            'mood-hot': 'Feeling Hot',
-            'people-solo': 'Solo',
-            'people-couple': 'Two',
-            'people-group': 'Group',
-            'type-korean': 'Korean',
-            'type-chinese': 'Chinese',
-            'type-japanese': 'Japanese',
-            'type-western': 'Western',
-            'type-world': 'World',
-            'type-any': 'Surprise Me',
-            recommend: '🍴 Get a Recommendation!',
-            loading: 'Picking the perfect dish...',
-            retry: '🔄 Try Another',
-            langBtn: '🌐 KO',
-            themeDark: '🌙',
-            themeLight: '☀️',
-            'contact-title': '📩 Partnership Inquiry',
-            'contact-desc': 'For business partnerships, advertising, or collaboration — drop us a message.',
-            'form-label-name': 'Name / Company',
-            'form-label-email': 'Email',
-            'form-label-message': 'Message',
-            'contact-submit': '📨 Send Inquiry',
-            'contact-success': '✅ Your inquiry has been sent successfully!',
-            'comments-title': '💬 Comments',
+        {
+            text: '단톡방에서 의견이 갈렸어. 넌?',
+            emoji: '💬',
+            options: [
+                { emoji: '🤝', text: '분위기 보면서 중립을 지킨다', type: '조율형' },
+                { emoji: '✊', text: '내 의견을 확실하게 말한다', type: '주도형' }
+            ]
+        },
+        {
+            text: '처음 만난 사람과\n어색한 침묵이 흘러. 넌?',
+            emoji: '🫣',
+            options: [
+                { emoji: '🗣️', text: '먼저 가벼운 질문을 던진다', type: '주도형' },
+                { emoji: '😶', text: '상대가 말할 때까지 기다린다', type: '경청형' }
+            ]
+        },
+        {
+            text: '친구가 "나 요즘 힘들어"\n라고 말했어. 넌?',
+            emoji: '😢',
+            options: [
+                { emoji: '🥺', text: '"무슨 일이야?" 하고 더 물어본다', type: '공감형' },
+                { emoji: '💪', text: '"다 잘 될 거야!" 하고 힘을 준다', type: '분위기형' }
+            ]
+        },
+        {
+            text: '회의 중 내 아이디어에\n반대 의견이 나왔어. 넌?',
+            emoji: '🏢',
+            options: [
+                { emoji: '👍', text: '상대 의견의 좋은 점을 먼저 인정한다', type: '조율형' },
+                { emoji: '📊', text: '내 아이디어의 근거를 다시 설명한다', type: '논리형' }
+            ]
+        },
+        {
+            text: '대화 중 상대방이\n팩트가 틀린 말을 했어. 넌?',
+            emoji: '🤨',
+            options: [
+                { emoji: '🧐', text: '부드럽게 정정해준다', type: '논리형' },
+                { emoji: '😊', text: '굳이 지적 안 하고 넘어간다', type: '공감형' }
+            ]
+        },
+        {
+            text: '친구 5명이랑\n여행 계획을 짜고 있어. 넌?',
+            emoji: '✈️',
+            options: [
+                { emoji: '📋', text: '내가 주도해서 일정을 짠다', type: '주도형' },
+                { emoji: '📝', text: '다른 사람 의견을 모아서 정리한다', type: '조율형' }
+            ]
+        },
+        {
+            text: '누군가 나에게\n진심 어린 칭찬을 해줬어. 넌?',
+            emoji: '🥹',
+            options: [
+                { emoji: '🥰', text: '고맙다고 하면서 상대도 칭찬해준다', type: '공감형' },
+                { emoji: '😂', text: '좀 쑥스러워서 농담으로 넘긴다', type: '분위기형' }
+            ]
+        },
+        {
+            text: '오랜만에 만난 친구가\n자기 얘기만 계속해. 넌?',
+            emoji: '🗣️',
+            options: [
+                { emoji: '👂', text: '잘 들어주다가 자연스럽게 내 얘기도 꺼낸다', type: '경청형' },
+                { emoji: '😆', text: '"야 내 얘기도 좀 들어봐!" 하고 끼어든다', type: '분위기형' }
+            ]
+        },
+        {
+            text: '중요한 대화 직전,\n넌 어떻게 준비해?',
+            emoji: '🎯',
+            options: [
+                { emoji: '🧠', text: '머릿속으로 할 말을 미리 정리한다', type: '논리형' },
+                { emoji: '🎤', text: '그때그때 분위기 보고 말한다', type: '분위기형' }
+            ]
+        }
+    ];
+
+    const typeData = {
+        '주도형': {
+            emoji: '🎯',
+            name: '주도형',
+            catchphrase: '"대화의 운전대를 잡는 사람"',
+            desc: '넌 대화를 이끌어가는 타입이야. 모임에서 자연스럽게 리더 역할을 하고, 어색한 침묵은 네가 깨. 사람들은 네가 있으면 대화가 술술 풀린다고 느껴.',
+            strengths: ['추진력 — 대화를 빠르게 진전시켜', '리더십 — 모임의 중심이 돼', '결단력 — 의견을 명확하게 전달해'],
+            weaknesses: ['가끔 상대 말을 끊을 수 있어', '너무 주도하면 상대가 위축될 수 있어'],
+            goodMatch: '경청형, 공감형',
+            badMatch: '주도형끼리',
+            closerCTA: '리드하면서도 상대가 편한 대화법, 연습해볼래?'
+        },
+        '경청형': {
+            emoji: '👂',
+            name: '경청형',
+            catchphrase: '"듣는 것만으로 사람을 치유하는 사람"',
+            desc: '넌 말보다 귀가 먼저인 사람이야. 사람들이 너한테 고민을 말하고 싶어하는 이유가 있어. 네 경청 하나로 상대방은 큰 위로를 받거든.',
+            strengths: ['공감 능력 — 상대의 감정을 잘 읽어', '신뢰감 — 사람들이 너를 믿고 이야기해', '깊은 관계 — 진정한 유대를 만들어'],
+            weaknesses: ['자기 의견을 잘 안 드러내', '때로 자신의 감정은 뒤로 미뤄'],
+            goodMatch: '주도형, 분위기형',
+            badMatch: '경청형끼리 (대화가 안 시작됨)',
+            closerCTA: '잘 듣는 건 최고야. 거기에 표현력까지 더해볼래?'
+        },
+        '조율형': {
+            emoji: '🤝',
+            name: '조율형',
+            catchphrase: '"갈등을 녹이는 중재자"',
+            desc: '넌 사람들 사이에서 균형을 잡는 천재야. 싸우던 사람도 네 말 듣고 "그것도 맞네" 하게 만들어. 네 외교력은 천부적인 재능이야.',
+            strengths: ['중재력 — 갈등 상황을 부드럽게 풀어', '균형감 — 다양한 시각을 존중해', '외교력 — 누구와도 잘 소통해'],
+            weaknesses: ['자기 입장이 불분명해 보일 수 있어', '모두를 만족시키려다 지칠 수 있어'],
+            goodMatch: '논리형, 주도형',
+            badMatch: '분위기형 (진지한 대화가 어려움)',
+            closerCTA: '중재도 좋지만, 네 의견도 확실히 전달하는 연습 해보자'
+        },
+        '논리형': {
+            emoji: '💡',
+            name: '논리형',
+            catchphrase: '"팩트로 대화를 완성하는 사람"',
+            desc: '넌 감정보다 논리가 먼저인 대화가야. 토론하면 무조건 네가 이겨. 복잡한 문제도 네가 정리하면 깔끔하게 풀려.',
+            strengths: ['설득력 — 근거 있는 주장을 펼쳐', '명확한 전달 — 핵심을 잘 짚어', '문제해결 — 복잡한 상황을 정리해'],
+            weaknesses: ['가끔 차갑게 느껴질 수 있어', '감정적 공감이 부족할 때가 있어'],
+            goodMatch: '조율형, 공감형',
+            badMatch: '논리형끼리 (토론이 끝나지 않음)',
+            closerCTA: '논리에 공감까지 더하면 최강이야. 연습해볼래?'
+        },
+        '공감형': {
+            emoji: '💛',
+            name: '공감형',
+            catchphrase: '"마음을 먼저 읽는 사람"',
+            desc: '넌 상대방의 기분을 본능적으로 아는 사람이야. 네 한 마디에 사람들이 위로를 받아. 네 곁에 있으면 마음이 편해지는 사람이 바로 너야.',
+            strengths: ['감성 지능 — 상대의 감정을 즉시 캐치해', '위로 — 진심이 담긴 말을 해', '깊은 유대 — 사람들과 깊은 관계를 만들어'],
+            weaknesses: ['감정 소모가 클 수 있어', '타인의 감정에 너무 영향받을 때가 있어'],
+            goodMatch: '논리형, 분위기형',
+            badMatch: '주도형 (감정 무시 느낌)',
+            closerCTA: '공감 능력 최고! 협상이나 면접에서도 써먹어볼래?'
+        },
+        '분위기형': {
+            emoji: '🎉',
+            name: '분위기형',
+            catchphrase: '"어디서든 웃음을 만드는 사람"',
+            desc: '넌 분위기 메이커야. 네가 있으면 모임이 200% 재밌어지고, 어색함이 사라져. 사람들이 너랑 있고 싶어하는 건 당연한 거야.',
+            strengths: ['유머 — 어떤 상황도 즐겁게 만들어', '사교성 — 누구와도 금방 친해져', '에너지 — 주변에 긍정 에너지를 퍼뜨려'],
+            weaknesses: ['진지한 대화를 피할 수 있어', '깊은 감정 표현이 어려울 때가 있어'],
+            goodMatch: '경청형, 공감형',
+            badMatch: '논리형 (유머가 안 통함)',
+            closerCTA: '재밌는 건 천재적인데, 진지한 대화도 연습해보자'
         }
     };
 
-    // Menu database with both languages
-    const menus = [
-        { name: { ko: '김치찌개', en: 'Kimchi Stew' }, emoji: '🍲', desc: { ko: '얼큰하고 깊은 맛의 한국 대표 찌개', en: 'Korea\'s signature spicy stew with fermented kimchi' }, type: 'korean', mood: ['stressed', 'cold'], people: ['solo', 'couple', 'group'], tags: { ko: ['매운맛', '국물요리', '밥도둑'], en: ['Spicy', 'Soup', 'Comfort Food'] }, image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=600&h=400&fit=crop' },
-        { name: { ko: '된장찌개', en: 'Soybean Paste Stew' }, emoji: '🫕', desc: { ko: '구수한 된장과 두부의 건강한 조합', en: 'Hearty stew with fermented soybean paste and tofu' }, type: 'korean', mood: ['tired', 'cold'], people: ['solo', 'couple'], tags: { ko: ['건강식', '국물요리', '집밥'], en: ['Healthy', 'Soup', 'Home-style'] }, image: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=600&h=400&fit=crop' },
-        { name: { ko: '삼겹살', en: 'Korean BBQ Pork Belly' }, emoji: '🥓', desc: { ko: '불판 위에서 지글지글 구워먹는 행복', en: 'Sizzling grilled pork belly — pure happiness on a plate' }, type: 'korean', mood: ['happy', 'stressed'], people: ['couple', 'group'], tags: { ko: ['고기', '회식', '소주안주'], en: ['Meat', 'Social', 'Grilled'] }, image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=600&h=400&fit=crop' },
-        { name: { ko: '비빔밥', en: 'Bibimbap' }, emoji: '🍚', desc: { ko: '다양한 나물과 고추장의 완벽한 조화', en: 'Mixed rice bowl with fresh veggies and spicy gochujang sauce' }, type: 'korean', mood: ['happy', 'tired'], people: ['solo'], tags: { ko: ['건강식', '간편식', '영양만점'], en: ['Healthy', 'Quick', 'Nutritious'] }, image: 'https://images.unsplash.com/photo-1553163147-622ab57be1c7?w=600&h=400&fit=crop' },
-        { name: { ko: '불고기', en: 'Bulgogi' }, emoji: '🥩', desc: { ko: '달콤짭짤한 양념의 부드러운 고기', en: 'Sweet and savory marinated beef — a Korean classic' }, type: 'korean', mood: ['happy', 'cold'], people: ['couple', 'group'], tags: { ko: ['고기', '달콤한맛', '인기메뉴'], en: ['Meat', 'Sweet', 'Popular'] }, image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=600&h=400&fit=crop' },
-        { name: { ko: '냉면', en: 'Cold Noodles' }, emoji: '🍜', desc: { ko: '시원한 육수에 쫄깃한 면발', en: 'Chilled buckwheat noodles in icy broth' }, type: 'korean', mood: ['hot', 'stressed'], people: ['solo', 'couple'], tags: { ko: ['시원함', '면요리', '여름별미'], en: ['Refreshing', 'Noodles', 'Summer'] }, image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&h=400&fit=crop' },
-        { name: { ko: '짜장면', en: 'Jajangmyeon' }, emoji: '🍝', desc: { ko: '달콤한 춘장소스의 중화면 요리', en: 'Noodles in rich black bean sauce' }, type: 'chinese', mood: ['happy', 'tired'], people: ['solo', 'couple'], tags: { ko: ['면요리', '배달음식', '달콤한맛'], en: ['Noodles', 'Delivery', 'Sweet'] }, image: 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=600&h=400&fit=crop' },
-        { name: { ko: '짬뽕', en: 'Jjamppong' }, emoji: '🍜', desc: { ko: '해산물이 듬뿍 들어간 얼큰한 면요리', en: 'Spicy seafood noodle soup loaded with fresh catch' }, type: 'chinese', mood: ['cold', 'stressed'], people: ['solo', 'couple'], tags: { ko: ['매운맛', '면요리', '해산물'], en: ['Spicy', 'Noodles', 'Seafood'] }, image: 'https://images.unsplash.com/photo-1555126634-323283e090fa?w=600&h=400&fit=crop' },
-        { name: { ko: '탕수육', en: 'Sweet & Sour Pork' }, emoji: '🍖', desc: { ko: '바삭한 튀김과 새콤달콤한 소스', en: 'Crispy fried pork with tangy sweet and sour glaze' }, type: 'chinese', mood: ['happy'], people: ['couple', 'group'], tags: { ko: ['튀김', '새콤달콤', '파티음식'], en: ['Fried', 'Tangy', 'Party Food'] }, image: 'https://images.unsplash.com/photo-1525755662778-989d0524087e?w=600&h=400&fit=crop' },
-        { name: { ko: '마라탕', en: 'Mala Hot Pot' }, emoji: '🌶️', desc: { ko: '마비되는 매운맛의 중독성 있는 국물', en: 'Numbing-spicy broth that\'s addictively delicious' }, type: 'chinese', mood: ['stressed', 'cold'], people: ['solo', 'couple'], tags: { ko: ['매운맛', '국물요리', '트렌디'], en: ['Spicy', 'Soup', 'Trendy'] }, image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&h=400&fit=crop' },
-        { name: { ko: '초밥', en: 'Sushi' }, emoji: '🍣', desc: { ko: '신선한 생선과 식초밥의 조화', en: 'Fresh fish on perfectly seasoned vinegared rice' }, type: 'japanese', mood: ['happy', 'hot'], people: ['solo', 'couple'], tags: { ko: ['생선', '깔끔한맛', '고급'], en: ['Fish', 'Clean', 'Premium'] }, image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&h=400&fit=crop' },
-        { name: { ko: '라멘', en: 'Ramen' }, emoji: '🍜', desc: { ko: '진한 돈코츠 육수의 일본 면요리', en: 'Rich tonkotsu pork bone broth with springy noodles' }, type: 'japanese', mood: ['tired', 'cold'], people: ['solo'], tags: { ko: ['면요리', '국물요리', '진한맛'], en: ['Noodles', 'Soup', 'Rich'] }, image: 'https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=600&h=400&fit=crop' },
-        { name: { ko: '돈카츠', en: 'Tonkatsu' }, emoji: '🍱', desc: { ko: '바삭한 돈까스에 소스를 듬뿍', en: 'Golden crispy breaded pork cutlet with savory sauce' }, type: 'japanese', mood: ['happy', 'tired'], people: ['solo', 'couple'], tags: { ko: ['튀김', '간편식', '인기메뉴'], en: ['Fried', 'Quick', 'Popular'] }, image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&h=400&fit=crop' },
-        { name: { ko: '우동', en: 'Udon' }, emoji: '🍲', desc: { ko: '따뜻한 국물에 쫄깃한 굵은 면', en: 'Thick chewy noodles in warm savory broth' }, type: 'japanese', mood: ['tired', 'cold'], people: ['solo'], tags: { ko: ['면요리', '국물요리', '담백한맛'], en: ['Noodles', 'Soup', 'Mild'] }, image: 'https://images.unsplash.com/photo-1618841557871-b4664fbf0cb3?w=600&h=400&fit=crop' },
-        { name: { ko: '파스타', en: 'Pasta' }, emoji: '🍝', desc: { ko: '크림, 토마토, 오일 다양한 소스의 면요리', en: 'Italian noodles with cream, tomato, or olive oil sauce' }, type: 'western', mood: ['happy'], people: ['solo', 'couple'], tags: { ko: ['면요리', '데이트', '세련된맛'], en: ['Noodles', 'Date Night', 'Classy'] }, image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600&h=400&fit=crop' },
-        { name: { ko: '피자', en: 'Pizza' }, emoji: '🍕', desc: { ko: '쭉 늘어나는 치즈와 다양한 토핑', en: 'Stretchy melted cheese with your favorite toppings' }, type: 'western', mood: ['happy', 'stressed'], people: ['couple', 'group'], tags: { ko: ['배달음식', '파티음식', '치즈'], en: ['Delivery', 'Party Food', 'Cheesy'] }, image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop' },
-        { name: { ko: '햄버거', en: 'Burger' }, emoji: '🍔', desc: { ko: '육즙 가득한 패티와 신선한 야채', en: 'Juicy patty stacked with fresh veggies and special sauce' }, type: 'western', mood: ['happy', 'tired'], people: ['solo'], tags: { ko: ['간편식', '패스트푸드', '육즙'], en: ['Quick', 'Fast Food', 'Juicy'] }, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&h=400&fit=crop' },
-        { name: { ko: '스테이크', en: 'Steak' }, emoji: '🥩', desc: { ko: '완벽하게 구운 두툼한 고기', en: 'Perfectly seared thick-cut steak cooked to your liking' }, type: 'western', mood: ['happy', 'stressed'], people: ['couple'], tags: { ko: ['고기', '데이트', '특별한날'], en: ['Meat', 'Date Night', 'Special'] }, image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&h=400&fit=crop' },
-        { name: { ko: '떡볶이', en: 'Tteokbokki' }, emoji: '🍢', desc: { ko: '매콤달콤한 국민 간식', en: 'Spicy-sweet chewy rice cakes — Korea\'s favorite snack' }, type: 'korean', mood: ['stressed', 'happy'], people: ['solo', 'couple'], tags: { ko: ['매운맛', '간식', '분식'], en: ['Spicy', 'Snack', 'Street Food'] }, image: 'https://images.unsplash.com/photo-1635363638580-c2809d049eee?w=600&h=400&fit=crop' },
-        { name: { ko: '치킨', en: 'Korean Fried Chicken' }, emoji: '🍗', desc: { ko: '바삭한 튀김옷과 촉촉한 닭고기', en: 'Ultra-crispy fried chicken — the king of Korean delivery' }, type: 'korean', mood: ['happy', 'stressed', 'tired'], people: ['solo', 'couple', 'group'], tags: { ko: ['튀김', '배달음식', '맥주안주'], en: ['Fried', 'Delivery', 'Beer Pairing'] }, image: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=600&h=400&fit=crop' },
-        { name: { ko: '삼계탕', en: 'Ginseng Chicken Soup' }, emoji: '🍲', desc: { ko: '인삼과 닭의 보양식', en: 'Whole chicken stuffed with ginseng, rice, and herbs' }, type: 'korean', mood: ['tired', 'hot'], people: ['solo'], tags: { ko: ['보양식', '건강식', '국물요리'], en: ['Restorative', 'Healthy', 'Soup'] }, image: 'https://images.unsplash.com/photo-1583224994076-0a3b94f10898?w=600&h=400&fit=crop' },
-        { name: { ko: '칼국수', en: 'Kalguksu' }, emoji: '🍜', desc: { ko: '손으로 직접 만든 쫄깃한 면과 시원한 국물', en: 'Hand-cut knife noodles in a clear savory broth' }, type: 'korean', mood: ['tired', 'cold'], people: ['solo', 'couple'], tags: { ko: ['면요리', '국물요리', '집밥'], en: ['Noodles', 'Soup', 'Home-style'] }, image: 'https://images.unsplash.com/photo-1552611052-33e04de145ba?w=600&h=400&fit=crop' },
-        { name: { ko: '타코', en: 'Tacos' }, emoji: '🌮', desc: { ko: '바삭한 또띠아에 다양한 토핑', en: 'Crunchy or soft tortillas loaded with savory fillings' }, type: 'western', mood: ['happy', 'stressed'], people: ['solo', 'couple', 'group'], tags: { ko: ['간편식', '멕시칸', '파티음식'], en: ['Quick', 'Mexican', 'Party Food'] }, image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&h=400&fit=crop' },
-        { name: { ko: '카레', en: 'Curry' }, emoji: '🍛', desc: { ko: '향신료가 어우러진 깊은 풍미의 카레', en: 'Aromatic spiced curry with tender meat and vegetables' }, type: 'japanese', mood: ['tired', 'cold'], people: ['solo', 'couple'], tags: { ko: ['향신료', '간편식', '밥요리'], en: ['Spiced', 'Quick', 'Rice Dish'] }, image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&h=400&fit=crop' },
-        { name: { ko: '샐러드 보울', en: 'Salad Bowl' }, emoji: '🥗', desc: { ko: '신선한 채소와 단백질의 건강한 한 그릇', en: 'Fresh greens with protein for a light, healthy meal' }, type: 'western', mood: ['hot', 'happy'], people: ['solo'], tags: { ko: ['건강식', '다이어트', '가벼운식사'], en: ['Healthy', 'Light', 'Fresh'] }, image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=400&fit=crop' },
-        // 세계 특별 음식 30가지
-        { name: { ko: '풀레드포크', en: 'Pulled Pork' }, emoji: '🐷', desc: { ko: '저온에서 오랜 시간 훈연한 미국 남부식 돼지고기', en: 'Slow-smoked Southern BBQ pork, shredded to perfection' }, type: 'world', mood: ['happy', 'stressed'], people: ['couple', 'group'], tags: { ko: ['미국남부', '훈연', 'BBQ'], en: ['Southern US', 'Smoked', 'BBQ'] }, image: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=600&h=400&fit=crop' },
-        { name: { ko: '팟타이', en: 'Pad Thai' }, emoji: '🍜', desc: { ko: '새콤달콤한 태국식 볶음 쌀국수', en: 'Thailand\'s iconic stir-fried rice noodles with tamarind sauce' }, type: 'world', mood: ['happy', 'hot'], people: ['solo', 'couple'], tags: { ko: ['태국', '볶음면', '새콤달콤'], en: ['Thai', 'Stir-fried', 'Tangy'] }, image: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=600&h=400&fit=crop' },
-        { name: { ko: '펠메니', en: 'Pelmeni' }, emoji: '🥟', desc: { ko: '러시아 전통 만두, 사워크림과 함께', en: 'Russian meat dumplings served with sour cream' }, type: 'world', mood: ['cold', 'tired'], people: ['solo', 'couple'], tags: { ko: ['러시아', '만두', '전통음식'], en: ['Russian', 'Dumplings', 'Traditional'] }, image: 'https://images.unsplash.com/photo-1583752028088-91e3e9880b46?w=600&h=400&fit=crop' },
-        { name: { ko: '반미', en: 'Banh Mi' }, emoji: '🥖', desc: { ko: '베트남식 바게트 샌드위치, 고수와 피클이 가득', en: 'Vietnamese baguette sandwich with cilantro, pickled veggies & pate' }, type: 'world', mood: ['happy', 'tired'], people: ['solo'], tags: { ko: ['베트남', '샌드위치', '길거리음식'], en: ['Vietnamese', 'Sandwich', 'Street Food'] }, image: 'https://images.unsplash.com/photo-1600688640154-9619e002df30?w=600&h=400&fit=crop' },
-        { name: { ko: '케밥', en: 'Kebab' }, emoji: '🥙', desc: { ko: '터키식 양념 고기구이를 빵에 싸 먹는 요리', en: 'Turkish spiced grilled meat wrapped in warm flatbread' }, type: 'world', mood: ['happy', 'stressed'], people: ['solo', 'couple'], tags: { ko: ['터키', '고기구이', '길거리음식'], en: ['Turkish', 'Grilled', 'Street Food'] }, image: 'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=600&h=400&fit=crop' },
-        { name: { ko: '무사카', en: 'Moussaka' }, emoji: '🍆', desc: { ko: '그리스식 가지와 다진 고기 오븐 요리', en: 'Greek layered casserole with eggplant, meat sauce & bechamel' }, type: 'world', mood: ['cold', 'tired'], people: ['couple', 'group'], tags: { ko: ['그리스', '오븐요리', '가지'], en: ['Greek', 'Baked', 'Eggplant'] }, image: 'https://images.unsplash.com/photo-1574484284002-952d92456975?w=600&h=400&fit=crop' },
-        { name: { ko: '분짜', en: 'Bun Cha' }, emoji: '🍖', desc: { ko: '하노이식 숯불구이 돼지고기와 쌀국수', en: 'Hanoi-style chargrilled pork patties with rice vermicelli' }, type: 'world', mood: ['happy', 'hot'], people: ['solo', 'couple'], tags: { ko: ['베트남', '숯불구이', '하노이'], en: ['Vietnamese', 'Grilled', 'Hanoi'] }, image: 'https://images.unsplash.com/photo-1576577445504-6af96477db52?w=600&h=400&fit=crop' },
-        { name: { ko: '엠파나다', en: 'Empanada' }, emoji: '🥟', desc: { ko: '아르헨티나식 고기 파이, 바삭한 껍질 속 풍부한 속', en: 'Argentine stuffed pastry with savory meat filling' }, type: 'world', mood: ['happy', 'tired'], people: ['solo', 'couple'], tags: { ko: ['아르헨티나', '파이', '간식'], en: ['Argentine', 'Pastry', 'Snack'] }, image: 'https://images.unsplash.com/photo-1604579278540-db564be5fc3b?w=600&h=400&fit=crop' },
-        { name: { ko: '팔라펠', en: 'Falafel' }, emoji: '🧆', desc: { ko: '중동식 병아리콩 튀김볼, 후무스와 함께', en: 'Middle Eastern crispy chickpea fritters with hummus & tahini' }, type: 'world', mood: ['happy', 'hot'], people: ['solo'], tags: { ko: ['중동', '채식', '병아리콩'], en: ['Middle Eastern', 'Vegan', 'Chickpea'] }, image: 'https://images.unsplash.com/photo-1593001874117-c99c800e3eb7?w=600&h=400&fit=crop' },
-        { name: { ko: '리소토', en: 'Risotto' }, emoji: '🍚', desc: { ko: '이탈리아식 크리미한 치즈 쌀요리', en: 'Italian creamy rice dish slow-cooked with parmesan & broth' }, type: 'world', mood: ['cold', 'happy'], people: ['couple'], tags: { ko: ['이탈리아', '쌀요리', '크리미'], en: ['Italian', 'Rice', 'Creamy'] }, image: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=600&h=400&fit=crop' },
-        { name: { ko: '포', en: 'Pho' }, emoji: '🍜', desc: { ko: '베트남 쌀국수, 진한 소뼈 육수의 깊은 맛', en: 'Vietnamese rice noodle soup with rich bone broth & fresh herbs' }, type: 'world', mood: ['tired', 'cold'], people: ['solo'], tags: { ko: ['베트남', '쌀국수', '국물요리'], en: ['Vietnamese', 'Noodle Soup', 'Aromatic'] }, image: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=600&h=400&fit=crop' },
-        { name: { ko: '페로기', en: 'Pierogi' }, emoji: '🥟', desc: { ko: '폴란드 전통 만두, 감자와 치즈 속이 가득', en: 'Polish dumplings stuffed with potato, cheese & caramelized onion' }, type: 'world', mood: ['cold', 'tired'], people: ['solo', 'couple'], tags: { ko: ['폴란드', '만두', '감자'], en: ['Polish', 'Dumplings', 'Potato'] }, image: 'https://images.unsplash.com/photo-1565280654386-36c3ea205191?w=600&h=400&fit=crop' },
-        { name: { ko: '세비체', en: 'Ceviche' }, emoji: '🐟', desc: { ko: '페루식 라임에 절인 신선한 생선요리', en: 'Peruvian fresh raw fish cured in citrus juice with chili & cilantro' }, type: 'world', mood: ['hot', 'happy'], people: ['couple'], tags: { ko: ['페루', '해산물', '상큼한맛'], en: ['Peruvian', 'Seafood', 'Citrusy'] }, image: 'https://images.unsplash.com/photo-1535399831218-d5bd36d1a6b3?w=600&h=400&fit=crop' },
-        { name: { ko: '렌당', en: 'Rendang' }, emoji: '🍛', desc: { ko: '인도네시아 코코넛밀크 소고기 조림, 세계 최고의 음식 선정', en: 'Indonesian dry coconut beef curry — voted world\'s best dish' }, type: 'world', mood: ['cold', 'stressed'], people: ['couple', 'group'], tags: { ko: ['인도네시아', '코코넛', '카레'], en: ['Indonesian', 'Coconut', 'Curry'] }, image: 'https://images.unsplash.com/photo-1606491956689-2ea866880049?w=600&h=400&fit=crop' },
-        { name: { ko: '슈니첼', en: 'Schnitzel' }, emoji: '🥩', desc: { ko: '오스트리아식 바삭한 빵가루 커틀릿', en: 'Austrian breaded & pan-fried veal cutlet, golden and crispy' }, type: 'world', mood: ['happy', 'tired'], people: ['solo', 'couple'], tags: { ko: ['오스트리아', '튀김', '커틀릿'], en: ['Austrian', 'Fried', 'Cutlet'] }, image: 'https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?w=600&h=400&fit=crop' },
-        { name: { ko: '타진', en: 'Tagine' }, emoji: '🫕', desc: { ko: '모로코식 토기 냄비에 천천히 끓인 스튜', en: 'Moroccan slow-cooked stew with preserved lemons & olives' }, type: 'world', mood: ['cold', 'tired'], people: ['couple', 'group'], tags: { ko: ['모로코', '스튜', '향신료'], en: ['Moroccan', 'Stew', 'Spiced'] }, image: 'https://images.unsplash.com/photo-1541518763669-27fef04b14ea?w=600&h=400&fit=crop' },
-        { name: { ko: '라크사', en: 'Laksa' }, emoji: '🍜', desc: { ko: '말레이시아 코코넛 커리 국수, 매콤하고 크리미', en: 'Malaysian spicy coconut curry noodle soup with shrimp' }, type: 'world', mood: ['cold', 'stressed'], people: ['solo'], tags: { ko: ['말레이시아', '코코넛', '매운맛'], en: ['Malaysian', 'Coconut', 'Spicy'] }, image: 'https://images.unsplash.com/photo-1569562211093-4ed0d0758f12?w=600&h=400&fit=crop' },
-        { name: { ko: '시수케밥', en: 'Shish Kebab' }, emoji: '🍢', desc: { ko: '꼬치에 꿴 중동식 양념 고기구이', en: 'Skewered & grilled marinated meat chunks over charcoal' }, type: 'world', mood: ['happy', 'stressed'], people: ['couple', 'group'], tags: { ko: ['중동', '꼬치', '숯불구이'], en: ['Middle Eastern', 'Skewered', 'Charcoal'] }, image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&h=400&fit=crop' },
-        { name: { ko: '뇨끼', en: 'Gnocchi' }, emoji: '🥔', desc: { ko: '이탈리아 감자 파스타, 부드러운 식감과 소스의 조화', en: 'Italian pillowy potato pasta in sage butter or tomato sauce' }, type: 'world', mood: ['cold', 'happy'], people: ['solo', 'couple'], tags: { ko: ['이탈리아', '감자', '파스타'], en: ['Italian', 'Potato', 'Pasta'] }, image: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=600&h=400&fit=crop' },
-        { name: { ko: '브리또', en: 'Burrito' }, emoji: '🌯', desc: { ko: '멕시코식 대형 또띠아에 밥, 고기, 콩을 가득 싼 요리', en: 'Giant Mexican tortilla wrap stuffed with rice, beans, meat & salsa' }, type: 'world', mood: ['happy', 'tired'], people: ['solo'], tags: { ko: ['멕시코', '간편식', '든든한'], en: ['Mexican', 'Quick', 'Hearty'] }, image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=600&h=400&fit=crop' },
-        { name: { ko: '훈제연어 베이글', en: 'Lox Bagel' }, emoji: '🥯', desc: { ko: '뉴욕식 크림치즈와 훈제연어를 올린 베이글', en: 'New York-style bagel with cream cheese, smoked salmon & capers' }, type: 'world', mood: ['happy', 'tired'], people: ['solo'], tags: { ko: ['뉴욕', '브런치', '연어'], en: ['New York', 'Brunch', 'Salmon'] }, image: 'https://images.unsplash.com/photo-1592415499556-74fcb9f18667?w=600&h=400&fit=crop' },
-        { name: { ko: '모모', en: 'Momo' }, emoji: '🥟', desc: { ko: '네팔/티베트식 찐만두, 매콤한 토마토 소스와 함께', en: 'Nepali-Tibetan steamed dumplings with spicy tomato chutney' }, type: 'world', mood: ['cold', 'happy'], people: ['solo', 'couple'], tags: { ko: ['네팔', '만두', '찜요리'], en: ['Nepali', 'Dumplings', 'Steamed'] }, image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=600&h=400&fit=crop' },
-        { name: { ko: '라따뚜이', en: 'Ratatouille' }, emoji: '🍆', desc: { ko: '프랑스 프로방스 지방의 채소 오븐구이 요리', en: 'French Provencal roasted vegetable medley — elegant & healthy' }, type: 'world', mood: ['happy', 'hot'], people: ['couple'], tags: { ko: ['프랑스', '채식', '오븐요리'], en: ['French', 'Vegetarian', 'Baked'] }, image: 'https://images.unsplash.com/photo-1572453800999-e8d2d1589b7c?w=600&h=400&fit=crop' },
-        { name: { ko: '지로스', en: 'Gyros' }, emoji: '🥙', desc: { ko: '그리스식 회전구이 고기를 피타빵에 싸먹는 요리', en: 'Greek rotisserie meat in warm pita with tzatziki & fresh veggies' }, type: 'world', mood: ['happy', 'tired'], people: ['solo'], tags: { ko: ['그리스', '길거리음식', '회전구이'], en: ['Greek', 'Street Food', 'Rotisserie'] }, image: 'https://images.unsplash.com/photo-1561651188-d207bbec4ec3?w=600&h=400&fit=crop' },
-        { name: { ko: '나시고렝', en: 'Nasi Goreng' }, emoji: '🍛', desc: { ko: '인도네시아 달콤짭짤한 볶음밥, 달걀프라이 토핑', en: 'Indonesian sweet soy fried rice topped with a sunny-side-up egg' }, type: 'world', mood: ['happy', 'tired'], people: ['solo', 'couple'], tags: { ko: ['인도네시아', '볶음밥', '달콤짭짤'], en: ['Indonesian', 'Fried Rice', 'Sweet-Savory'] }, image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&h=400&fit=crop' },
-        { name: { ko: '츄로스', en: 'Churros' }, emoji: '🍩', desc: { ko: '스페인식 바삭한 튀김 도넛, 초콜릿 소스와 함께', en: 'Spanish crispy fried dough sticks dipped in thick hot chocolate' }, type: 'world', mood: ['happy', 'stressed'], people: ['solo', 'couple'], tags: { ko: ['스페인', '디저트', '초콜릿'], en: ['Spanish', 'Dessert', 'Chocolate'] }, image: 'https://images.unsplash.com/photo-1624371414361-e670246ebc6c?w=600&h=400&fit=crop' },
-        { name: { ko: '감바스', en: 'Gambas al Ajillo' }, emoji: '🦐', desc: { ko: '스페인식 마늘 올리브유에 새우를 끓인 타파스', en: 'Spanish garlic shrimp sizzling in olive oil — classic tapas' }, type: 'world', mood: ['happy', 'cold'], people: ['couple', 'group'], tags: { ko: ['스페인', '타파스', '새우'], en: ['Spanish', 'Tapas', 'Shrimp'] }, image: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=600&h=400&fit=crop' },
-        { name: { ko: '빠에야', en: 'Paella' }, emoji: '🥘', desc: { ko: '스페인 발렌시아 지방의 해산물 사프란 쌀요리', en: 'Spanish saffron rice with seafood, a Valencia specialty' }, type: 'world', mood: ['happy', 'cold'], people: ['couple', 'group'], tags: { ko: ['스페인', '쌀요리', '해산물'], en: ['Spanish', 'Rice', 'Seafood'] }, image: 'https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=600&h=400&fit=crop' },
-        { name: { ko: '퓨전 포케', en: 'Poke Bowl' }, emoji: '🐟', desc: { ko: '하와이식 생선회 덮밥, 아보카도와 특제 소스', en: 'Hawaiian raw fish rice bowl with avocado & sesame dressing' }, type: 'world', mood: ['hot', 'happy'], people: ['solo'], tags: { ko: ['하와이', '생선회', '건강식'], en: ['Hawaiian', 'Raw Fish', 'Healthy'] }, image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop' },
-        { name: { ko: '봉골레', en: 'Spaghetti Vongole' }, emoji: '🍝', desc: { ko: '이탈리아식 바지락 스파게티, 화이트와인 소스', en: 'Italian clam spaghetti in white wine, garlic & parsley sauce' }, type: 'world', mood: ['happy'], people: ['solo', 'couple'], tags: { ko: ['이탈리아', '해산물', '파스타'], en: ['Italian', 'Seafood', 'Pasta'] }, image: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=600&h=400&fit=crop' },
-        // 추가 한식 3가지
-        { name: { ko: '갈비탕', en: 'Galbitang' }, emoji: '🍖', desc: { ko: '소갈비를 푹 고아 만든 맑고 깊은 국물', en: 'Clear beef short rib soup simmered to perfection' }, type: 'korean', mood: ['cold', 'tired'], people: ['solo', 'couple'], tags: { ko: ['국물요리', '보양식', '고기'], en: ['Soup', 'Restorative', 'Beef'] }, image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&h=400&fit=crop' },
-        { name: { ko: '순두부찌개', en: 'Sundubu Jjigae' }, emoji: '🫕', desc: { ko: '부드러운 순두부와 매콤한 양념의 뜨끈한 찌개', en: 'Spicy soft tofu stew with egg and seafood' }, type: 'korean', mood: ['cold', 'stressed'], people: ['solo', 'couple'], tags: { ko: ['매운맛', '국물요리', '두부'], en: ['Spicy', 'Soup', 'Tofu'] }, image: 'https://images.unsplash.com/photo-1583187855778-1ea2c2e0e3b8?w=600&h=400&fit=crop' },
-        { name: { ko: '잡채', en: 'Japchae' }, emoji: '🍜', desc: { ko: '당면과 다양한 채소를 달콤하게 볶은 명절 요리', en: 'Sweet potato glass noodles stir-fried with vegetables & beef' }, type: 'korean', mood: ['happy'], people: ['couple', 'group'], tags: { ko: ['명절음식', '달콤한맛', '면요리'], en: ['Holiday', 'Sweet', 'Noodles'] }, image: 'https://images.unsplash.com/photo-1580651214613-f4692d6d138e?w=600&h=400&fit=crop' },
-        // 추가 중식 3가지
-        { name: { ko: '깐풍기', en: 'Kanpunggi' }, emoji: '🍗', desc: { ko: '바삭한 닭튀김에 매콤달콤한 소스를 버무린 요리', en: 'Crispy fried chicken tossed in sweet & spicy garlic sauce' }, type: 'chinese', mood: ['happy', 'stressed'], people: ['couple', 'group'], tags: { ko: ['튀김', '매운맛', '닭고기'], en: ['Fried', 'Spicy', 'Chicken'] }, image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=600&h=400&fit=crop' },
-        { name: { ko: '양장피', en: 'Yangjangpi' }, emoji: '🥗', desc: { ko: '해산물과 채소를 겨자소스에 버무린 중화 냉채', en: 'Chinese cold platter with seafood, veggies & mustard dressing' }, type: 'chinese', mood: ['hot', 'happy'], people: ['couple', 'group'], tags: { ko: ['냉채', '해산물', '상큼한맛'], en: ['Cold Dish', 'Seafood', 'Refreshing'] }, image: 'https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=600&h=400&fit=crop' },
-        { name: { ko: '볶음밥', en: 'Chinese Fried Rice' }, emoji: '🍳', desc: { ko: '강한 불에서 빠르게 볶아낸 고소한 중화 볶음밥', en: 'Wok-fried rice with egg, vegetables & savory soy seasoning' }, type: 'chinese', mood: ['tired', 'happy'], people: ['solo'], tags: { ko: ['간편식', '볶음', '밥요리'], en: ['Quick', 'Stir-fried', 'Rice'] }, image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&h=400&fit=crop' },
-        // 추가 일식 3가지
-        { name: { ko: '오코노미야키', en: 'Okonomiyaki' }, emoji: '🥞', desc: { ko: '일본식 철판 부침개, 소스와 가쓰오부시 토핑', en: 'Japanese savory pancake topped with special sauce & bonito flakes' }, type: 'japanese', mood: ['happy', 'tired'], people: ['solo', 'couple'], tags: { ko: ['철판요리', '간식', '오사카'], en: ['Griddle', 'Snack', 'Osaka'] }, image: 'https://images.unsplash.com/photo-1638252827049-5a67e38c0e64?w=600&h=400&fit=crop' },
-        { name: { ko: '야키토리', en: 'Yakitori' }, emoji: '🍢', desc: { ko: '숯불에 구운 일본식 닭꼬치, 소금 또는 타레 소스', en: 'Charcoal-grilled chicken skewers with salt or tare glaze' }, type: 'japanese', mood: ['happy', 'stressed'], people: ['solo', 'couple', 'group'], tags: { ko: ['꼬치', '숯불구이', '이자카야'], en: ['Skewered', 'Grilled', 'Izakaya'] }, image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=600&h=400&fit=crop' },
-        { name: { ko: '규동', en: 'Gyudon' }, emoji: '🥩', desc: { ko: '달콤짭짤한 양념 소고기를 올린 일본식 덮밥', en: 'Japanese beef rice bowl with sweet soy-braised onions' }, type: 'japanese', mood: ['tired', 'happy'], people: ['solo'], tags: { ko: ['덮밥', '간편식', '소고기'], en: ['Rice Bowl', 'Quick', 'Beef'] }, image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&h=400&fit=crop' },
-        // 추가 양식 3가지
-        { name: { ko: '피시앤칩스', en: 'Fish & Chips' }, emoji: '🐟', desc: { ko: '영국식 바삭한 생선튀김과 감자튀김', en: 'British classic — crispy battered fish with golden chips' }, type: 'western', mood: ['happy', 'tired'], people: ['solo', 'couple'], tags: { ko: ['영국', '튀김', '감자'], en: ['British', 'Fried', 'Potato'] }, image: 'https://images.unsplash.com/photo-1579208030886-b1715a2e1ee6?w=600&h=400&fit=crop' },
-        { name: { ko: '맥앤치즈', en: 'Mac & Cheese' }, emoji: '🧀', desc: { ko: '진한 치즈소스에 버무린 미국식 마카로니', en: 'Creamy American macaroni smothered in melted cheese sauce' }, type: 'western', mood: ['stressed', 'cold'], people: ['solo', 'couple'], tags: { ko: ['치즈', '미국', '간편식'], en: ['Cheesy', 'American', 'Comfort'] }, image: 'https://images.unsplash.com/photo-1543339494-b4cd4f7ba686?w=600&h=400&fit=crop' },
-        { name: { ko: '클럽 샌드위치', en: 'Club Sandwich' }, emoji: '🥪', desc: { ko: '토스트 사이에 닭고기, 베이컨, 야채를 겹겹이 쌓은 샌드위치', en: 'Triple-decker toasted sandwich with chicken, bacon & veggies' }, type: 'western', mood: ['happy', 'tired'], people: ['solo'], tags: { ko: ['샌드위치', '간편식', '브런치'], en: ['Sandwich', 'Quick', 'Brunch'] }, image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=600&h=400&fit=crop' },
-        // 추가 세계음식 3가지
-        { name: { ko: '톰얌꿍', en: 'Tom Yum Goong' }, emoji: '🍲', desc: { ko: '태국식 새우가 들어간 매콤새콤한 국물 요리', en: 'Thai hot & sour shrimp soup with lemongrass & galangal' }, type: 'world', mood: ['cold', 'stressed'], people: ['solo', 'couple'], tags: { ko: ['태국', '매운맛', '해산물'], en: ['Thai', 'Spicy', 'Seafood'] }, image: 'https://images.unsplash.com/photo-1548943487-a2e4e43b4853?w=600&h=400&fit=crop' },
-        { name: { ko: '딤섬', en: 'Dim Sum' }, emoji: '🥟', desc: { ko: '홍콩식 다양한 찐만두와 소형 요리 모음', en: 'Hong Kong-style steamed dumplings & bite-sized delicacies' }, type: 'world', mood: ['happy'], people: ['couple', 'group'], tags: { ko: ['홍콩', '만두', '브런치'], en: ['Hong Kong', 'Dumplings', 'Brunch'] }, image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&h=400&fit=crop' },
-        { name: { ko: '비리야니', en: 'Biryani' }, emoji: '🍛', desc: { ko: '인도식 향신료 쌀밥에 고기를 켜켜이 쌓아 지은 요리', en: 'Indian layered spiced rice & meat dish cooked in aromatic herbs' }, type: 'world', mood: ['cold', 'happy'], people: ['couple', 'group'], tags: { ko: ['인도', '향신료', '쌀요리'], en: ['Indian', 'Spiced', 'Rice'] }, image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&h=400&fit=crop' },
-    ];
+    // ==================== STATE ====================
+    let currentQ = 0;
+    const answers = new Array(10).fill(null);
 
-    let currentLang = localStorage.getItem('lang') || 'ko';
+    // ==================== DOM ELEMENTS ====================
+    const pages = {
+        landing: document.getElementById('landing'),
+        quiz: document.getElementById('quiz'),
+        loading: document.getElementById('loading'),
+        result: document.getElementById('result')
+    };
 
-    // Theme
-    if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeToggle.textContent = i18n[currentLang].themeLight;
+    const startBtn = document.getElementById('start-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const questionText = document.getElementById('question-text');
+    const optionsDiv = document.getElementById('options');
+    const backBtn = document.getElementById('back-btn');
+    const loadingText = document.getElementById('loading-text');
+    const loadingBar = document.getElementById('loading-bar');
+    const loadingEmoji = document.getElementById('loading-emoji');
+    const resultContainer = document.getElementById('result-container');
+    const participantCount = document.getElementById('participant-count');
+    const themeToggle = document.getElementById('theme-toggle');
+    const quizCharacter = document.getElementById('quiz-character');
+
+    // ==================== THEME ====================
+    const savedTheme = localStorage.getItem('talktype-theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        themeToggle.textContent = '☀️';
     }
 
     themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        themeToggle.textContent = isDark ? i18n[currentLang].themeLight : i18n[currentLang].themeDark;
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        if (typeof DISQUS !== 'undefined') {
-            DISQUS.reset({
-                reload: true,
-                config: function () {
-                    this.page.url = window.location.href;
-                    this.page.identifier = 'whats-for-dinner';
-                    this.page.colorScheme = isDark ? 'dark' : 'light';
-                }
-            });
-        }
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        themeToggle.textContent = isLight ? '☀️' : '🌙';
+        localStorage.setItem('talktype-theme', isLight ? 'light' : 'dark');
     });
 
-    // Language
-    function applyLang(lang) {
-        currentLang = lang;
-        const t = i18n[lang];
-        document.getElementById('title').textContent = t.title;
-        document.getElementById('subtitle').textContent = t.subtitle;
-        document.getElementById('label-mood').textContent = t['label-mood'];
-        document.getElementById('label-people').textContent = t['label-people'];
-        document.getElementById('label-type').textContent = t['label-type'];
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            el.textContent = t[el.dataset.i18n];
+    // ==================== PARTICIPANT COUNT ====================
+    const baseCount = 12847;
+    const daysSinceBase = Math.floor((Date.now() - new Date('2025-02-14').getTime()) / 86400000);
+    const totalCount = baseCount + Math.max(0, daysSinceBase * 73);
+    participantCount.textContent = `${totalCount.toLocaleString()}명이 참여했어요`;
+
+    // ==================== PAGE NAVIGATION ====================
+    function showPage(pageId) {
+        Object.values(pages).forEach(p => p.classList.remove('active'));
+        pages[pageId].classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    // ==================== QUIZ LOGIC ====================
+    function renderQuestion() {
+        const q = questions[currentQ];
+        progressBar.style.width = `${((currentQ + 1) / 10) * 100}%`;
+        progressText.textContent = `${currentQ + 1}/10`;
+        backBtn.style.display = currentQ > 0 ? 'block' : 'none';
+        quizCharacter.textContent = q.emoji;
+
+        const area = document.getElementById('question-area');
+        area.classList.remove('slide-in');
+        void area.offsetWidth;
+        area.classList.add('slide-in');
+
+        questionText.textContent = q.text;
+        optionsDiv.innerHTML = '';
+
+        q.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            if (answers[currentQ] === i) btn.classList.add('selected');
+            btn.textContent = `${opt.emoji} ${opt.text}`;
+            btn.addEventListener('click', () => selectOption(i));
+            optionsDiv.appendChild(btn);
         });
-        recommendButton.textContent = t.recommend;
-        langToggle.textContent = t.langBtn;
-        document.documentElement.lang = lang;
-
-        document.getElementById('contact-title').textContent = t['contact-title'];
-        document.getElementById('contact-desc').textContent = t['contact-desc'];
-        document.getElementById('form-label-name').textContent = t['form-label-name'];
-        document.getElementById('form-label-email').textContent = t['form-label-email'];
-        document.getElementById('form-label-message').textContent = t['form-label-message'];
-        document.getElementById('contact-submit').textContent = t['contact-submit'];
-        document.getElementById('comments-title').textContent = t['comments-title'];
-
-        const isDark = document.body.classList.contains('dark-mode');
-        themeToggle.textContent = isDark ? t.themeLight : t.themeDark;
-
-        localStorage.setItem('lang', lang);
     }
 
-    langToggle.addEventListener('click', () => {
-        applyLang(currentLang === 'ko' ? 'en' : 'ko');
-        resultDiv.innerHTML = '';
-    });
+    function selectOption(index) {
+        answers[currentQ] = index;
 
-    applyLang(currentLang);
-
-    // Filter selection
-    document.querySelectorAll('.filter-options').forEach(group => {
-        group.addEventListener('click', (e) => {
-            const btn = e.target.closest('.filter-btn');
-            if (!btn) return;
-            group.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        });
-    });
-
-    function getSelected(groupId) {
-        const active = document.querySelector(`#${groupId} .filter-btn.active`);
-        return active ? active.dataset.value : null;
-    }
-
-    // Shuffle queue for equal probability — every item appears once before repeating
-    let shuffleQueue = [];
-    let lastFilterKey = '';
-
-    function shuffleArray(arr) {
-        const a = [...arr];
-        for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-        }
-        return a;
-    }
-
-    function recommend() {
-        const mood = getSelected('mood-options');
-        const people = getSelected('people-options');
-        const type = getSelected('type-options');
-        const t = i18n[currentLang];
-
-        let filtered = [...menus];
-        if (mood) filtered = filtered.filter(m => m.mood.includes(mood));
-        if (people) filtered = filtered.filter(m => m.people.includes(people));
-        if (type && type !== 'any') filtered = filtered.filter(m => m.type === type);
-        if (filtered.length === 0) filtered = [...menus];
-
-        // Reset shuffle queue when filters change or queue is empty
-        const filterKey = `${mood}-${people}-${type}`;
-        if (filterKey !== lastFilterKey || shuffleQueue.length === 0) {
-            shuffleQueue = shuffleArray(filtered);
-            lastFilterKey = filterKey;
-        }
-
-        const pick = shuffleQueue.pop();
-
-        resultDiv.innerHTML = `<div class="loading"><div class="spinner"></div><br>${t.loading}</div>`;
+        const btns = optionsDiv.querySelectorAll('.option-btn');
+        btns.forEach(b => b.classList.remove('selected'));
+        btns[index].classList.add('selected');
 
         setTimeout(() => {
-            const imageHtml = pick.image
-                ? `<img class="menu-image" src="${pick.image}" alt="${pick.name[currentLang]}">`
-                : '';
-            resultDiv.innerHTML = `
-                <div class="menu-card">
-                    ${imageHtml}
-                    <h2>${pick.emoji} ${pick.name[currentLang]}</h2>
-                    <p class="menu-desc">${pick.desc[currentLang]}</p>
-                    <div class="menu-tags">
-                        ${pick.tags[currentLang].map(tag => `<span class="tag">#${tag}</span>`).join('')}
-                    </div>
-                    <button class="retry-btn" id="retry-btn">${t.retry}</button>
-                </div>
-            `;
-            document.getElementById('retry-btn').addEventListener('click', recommend);
-        }, 1000);
+            if (currentQ < 9) {
+                currentQ++;
+                renderQuestion();
+            } else {
+                showLoading();
+            }
+        }, 300);
     }
 
-    recommendButton.addEventListener('click', recommend);
+    // ==================== LOADING ====================
+    function showLoading() {
+        showPage('loading');
+        loadingBar.style.width = '0%';
+        loadingText.textContent = '대화 패턴 분석 중...';
+        loadingEmoji.textContent = '🔍';
 
-    // Contact form submission
-    const contactForm = document.getElementById('contact-form');
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const submitBtn = document.getElementById('contact-submit');
-        const successMsg = document.getElementById('contact-success');
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.6';
+        setTimeout(() => { loadingBar.style.width = '35%'; }, 100);
+        setTimeout(() => {
+            loadingText.textContent = '유형 매칭 중...';
+            loadingEmoji.textContent = '🧩';
+            loadingBar.style.width = '70%';
+        }, 1200);
+        setTimeout(() => {
+            loadingText.textContent = '완료!';
+            loadingEmoji.textContent = '🎉';
+            loadingBar.style.width = '100%';
+        }, 2400);
+        setTimeout(() => {
+            showResult();
+        }, 3000);
+    }
 
-        try {
-            const res = await fetch(contactForm.action, {
-                method: 'POST',
-                body: new FormData(contactForm),
-                headers: { 'Accept': 'application/json' }
-            });
-            if (res.ok) {
-                contactForm.reset();
-                successMsg.textContent = i18n[currentLang]['contact-success'];
-                successMsg.style.display = 'block';
-                setTimeout(() => { successMsg.style.display = 'none'; }, 5000);
+    // ==================== SCORING ====================
+    function calculateResult() {
+        const scores = {
+            '주도형': 0,
+            '경청형': 0,
+            '조율형': 0,
+            '논리형': 0,
+            '공감형': 0,
+            '분위기형': 0
+        };
+
+        answers.forEach((ansIdx, qIdx) => {
+            if (ansIdx !== null) {
+                const type = questions[qIdx].options[ansIdx].type;
+                scores[type] += 2;
             }
-        } catch (_) { /* silent */ }
+        });
 
-        submitBtn.disabled = false;
-        submitBtn.style.opacity = '1';
+        const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+        return { winner: sorted[0][0], scores };
+    }
+
+    // ==================== RESULT ====================
+    function showResult() {
+        showPage('result');
+        const { winner, scores } = calculateResult();
+        const data = typeData[winner];
+        const maxScore = Math.max(...Object.values(scores), 1);
+
+        const scoreChartHTML = Object.entries(scores)
+            .sort((a, b) => b[1] - a[1])
+            .map(([type, score]) => {
+                const pct = Math.round((score / maxScore) * 100);
+                const isTop = type === winner;
+                return `
+                    <div class="score-row">
+                        <span class="score-label">${typeData[type].emoji} ${type}</span>
+                        <div class="score-bar-bg">
+                            <div class="score-bar-fill ${isTop ? 'top' : ''}" style="width: 0%" data-width="${pct}%"></div>
+                        </div>
+                        <span class="score-value">${score}</span>
+                    </div>
+                `;
+            }).join('');
+
+        resultContainer.innerHTML = `
+            <div class="result-confetti">🎊 ✨ 🎊</div>
+
+            <div class="result-card">
+                <p class="result-label">너의 대화유형은</p>
+                <div class="result-emoji">${data.emoji}</div>
+                <h2 class="result-type-name">${data.name}</h2>
+                <p class="result-catchphrase">${data.catchphrase}</p>
+                <p class="result-desc">${data.desc}</p>
+                <div class="score-chart">${scoreChartHTML}</div>
+            </div>
+
+            <div class="share-section">
+                <p class="share-title">친구에게 공유하기</p>
+                <div class="share-buttons">
+                    <button class="share-btn kakao" id="share-kakao">💬 카카오톡</button>
+                    <button class="share-btn x" id="share-x">𝕏 공유하기</button>
+                    <button class="share-btn copy" id="share-copy">🔗 링크 복사</button>
+                </div>
+            </div>
+
+            <div class="traits-section">
+                <p class="traits-title">💪 나의 대화 강점</p>
+                ${data.strengths.map(s => `<div class="trait-item"><span>✅</span><span>${s}</span></div>`).join('')}
+            </div>
+
+            <div class="traits-section">
+                <p class="traits-title">⚡ 주의할 점</p>
+                ${data.weaknesses.map(w => `<div class="trait-item"><span>⚠️</span><span>${w}</span></div>`).join('')}
+            </div>
+
+            <div class="compat-section">
+                <p class="compat-title">💕 대화 궁합</p>
+                <div class="compat-row compat-good">
+                    <span>✅</span>
+                    <span>잘 맞는 유형: ${data.goodMatch}</span>
+                </div>
+                <div class="compat-row compat-bad">
+                    <span>⛔</span>
+                    <span>안 맞는 유형: ${data.badMatch}</span>
+                </div>
+            </div>
+
+            <div class="premium-section">
+                <p class="premium-header">🔒 상세 분석 리포트</p>
+                <div class="premium-blur">
+                    <p>나의 대화 강점 심층 분석 3가지</p>
+                    <p>나의 대화 약점 개선 방법 2가지</p>
+                    <p>유형별 맞춤 대화 전략 5가지</p>
+                    <p>상황별 대화 스크립트 제공</p>
+                </div>
+                <button class="premium-btn" id="premium-btn">상세 분석 보기 — ₩1,900</button>
+            </div>
+
+            <div class="cta-section">
+                <p class="cta-section-text">${data.closerCTA}</p>
+                <a href="https://thecloser.co.kr" target="_blank" rel="noopener" class="cta-closer-btn">
+                    AI 대화 트레이닝 시작하기 →
+                </a>
+            </div>
+
+            <div class="retry-section">
+                <button class="retry-btn" id="retry-btn">🔄 테스트 다시 하기</button>
+            </div>
+        `;
+
+        // Animate score bars
+        setTimeout(() => {
+            resultContainer.querySelectorAll('.score-bar-fill').forEach(bar => {
+                bar.style.width = bar.dataset.width;
+            });
+        }, 100);
+
+        // Share handlers
+        document.getElementById('share-kakao').addEventListener('click', shareKakao);
+        document.getElementById('share-x').addEventListener('click', () => shareX(data));
+        document.getElementById('share-copy').addEventListener('click', shareCopy);
+        document.getElementById('premium-btn').addEventListener('click', () => {
+            showToast('결제 기능 준비 중입니다!');
+        });
+        document.getElementById('retry-btn').addEventListener('click', restart);
+    }
+
+    // ==================== SHARING ====================
+    function shareKakao() {
+        if (window.Kakao && window.Kakao.isInitialized()) {
+            const { winner } = calculateResult();
+            const data = typeData[winner];
+            window.Kakao.Share.sendDefault({
+                objectType: 'feed',
+                content: {
+                    title: `나의 대화유형은 ${data.emoji}${data.name}!`,
+                    description: data.catchphrase,
+                    imageUrl: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=400&fit=crop',
+                    link: {
+                        mobileWebUrl: window.location.href,
+                        webUrl: window.location.href,
+                    },
+                },
+                buttons: [
+                    {
+                        title: '나도 테스트 하기',
+                        link: {
+                            mobileWebUrl: window.location.href,
+                            webUrl: window.location.href,
+                        },
+                    },
+                ],
+            });
+        } else {
+            shareCopy();
+            showToast('카카오 SDK가 로드되지 않아 링크가 복사되었어요');
+        }
+    }
+
+    function shareX(data) {
+        const text = `나의 대화유형은 ${data.emoji}${data.name}! ${data.catchphrase}\n너도 해봐!`;
+        const url = window.location.href;
+        window.open(
+            `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+            '_blank',
+            'width=550,height=420'
+        );
+    }
+
+    function shareCopy() {
+        const btn = document.getElementById('share-copy');
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            btn.classList.add('copied');
+            btn.textContent = '✅ 복사 완료!';
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.textContent = '🔗 링크 복사';
+            }, 2000);
+        }).catch(() => {
+            showToast('링크 복사에 실패했어요');
+        });
+    }
+
+    function showToast(msg) {
+        let toast = document.querySelector('.toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'toast';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ==================== RESTART ====================
+    function restart() {
+        currentQ = 0;
+        answers.fill(null);
+        showPage('landing');
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    startBtn.addEventListener('click', () => {
+        showPage('quiz');
+        currentQ = 0;
+        answers.fill(null);
+        renderQuestion();
+    });
+
+    backBtn.addEventListener('click', () => {
+        if (currentQ > 0) {
+            currentQ--;
+            renderQuestion();
+        }
     });
 });

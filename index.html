@@ -3,96 +3,94 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>오늘 저녁 뭐 먹지? | What's for Dinner?</title>
+    <title>대화유형 테스트 — 너는 대화할 때 어떤 사람이야?</title>
+    <meta name="description" content="10개 질문으로 알아보는 나의 대화 스타일. 3분이면 끝!">
+    <meta property="og:title" content="대화유형 테스트 — 너는 대화할 때 어떤 사람이야?">
+    <meta property="og:description" content="10개 질문으로 알아보는 나의 대화 스타일. 3분이면 끝!">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&h=630&fit=crop">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link href='/style.css' rel='stylesheet'>
 </head>
 <body>
-    <header>
-        <div class="header-controls">
-            <button id="lang-toggle" aria-label="Language">🌐 EN</button>
-            <button id="theme-toggle" aria-label="Toggle theme">🌙</button>
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="테마 전환">🌙</button>
+
+    <!-- Floating cute decorations -->
+    <div class="floating-deco" aria-hidden="true">
+        <span class="deco deco-1">💬</span>
+        <span class="deco deco-2">✨</span>
+        <span class="deco deco-3">🫧</span>
+        <span class="deco deco-4">💭</span>
+        <span class="deco deco-5">🌟</span>
+        <span class="deco deco-6">🗨️</span>
+        <span class="deco deco-7">💫</span>
+        <span class="deco deco-8">🫶</span>
+    </div>
+
+    <!-- Landing Page -->
+    <section id="landing" class="page active">
+        <div class="landing-container">
+            <div class="landing-character">🗣️</div>
+            <div class="landing-badge">3분 테스트</div>
+            <h1 class="landing-title">너는 대화할 때<br>어떤 사람이야?</h1>
+            <p class="landing-sub">10개 질문으로 알아보는 나의 대화 유형</p>
+            <button id="start-btn" class="cta-btn">
+                <span class="btn-sparkle">✨</span>
+                테스트 시작하기
+                <span class="btn-sparkle">✨</span>
+            </button>
+            <div class="participant-count" id="participant-count"></div>
+            <div class="type-preview">
+                <p class="preview-label">총 6가지 유형 중 나는?</p>
+                <div class="preview-icons">
+                    <span title="주도형">🎯</span>
+                    <span title="경청형">👂</span>
+                    <span title="조율형">🤝</span>
+                    <span title="논리형">💡</span>
+                    <span title="공감형">💛</span>
+                    <span title="분위기형">🎉</span>
+                </div>
+            </div>
         </div>
-        <h1 id="title">🍽️ 오늘 저녁 뭐 먹지?</h1>
-        <p id="subtitle">기분과 상황을 알려주면 딱 맞는 저녁 메뉴를 추천해드려요!</p>
-    </header>
-    <main>
-        <section class="filters">
-            <div class="filter-group">
-                <label id="label-mood">기분</label>
-                <div class="filter-options" id="mood-options">
-                    <button class="filter-btn" data-value="happy"><span>😊</span> <span data-i18n="mood-happy">기분 좋음</span></button>
-                    <button class="filter-btn" data-value="tired"><span>😩</span> <span data-i18n="mood-tired">피곤함</span></button>
-                    <button class="filter-btn" data-value="stressed"><span>😤</span> <span data-i18n="mood-stressed">스트레스</span></button>
-                    <button class="filter-btn" data-value="cold"><span>🥶</span> <span data-i18n="mood-cold">추움</span></button>
-                    <button class="filter-btn" data-value="hot"><span>🥵</span> <span data-i18n="mood-hot">더움</span></button>
-                </div>
-            </div>
-            <div class="filter-group">
-                <label id="label-people">식사 인원</label>
-                <div class="filter-options" id="people-options">
-                    <button class="filter-btn" data-value="solo"><span>🧑</span> <span data-i18n="people-solo">혼밥</span></button>
-                    <button class="filter-btn" data-value="couple"><span>👫</span> <span data-i18n="people-couple">2인</span></button>
-                    <button class="filter-btn" data-value="group"><span>👨‍👩‍👧‍👦</span> <span data-i18n="people-group">단체</span></button>
-                </div>
-            </div>
-            <div class="filter-group">
-                <label id="label-type">음식 종류</label>
-                <div class="filter-options" id="type-options">
-                    <button class="filter-btn" data-value="korean"><span>🇰🇷</span> <span data-i18n="type-korean">한식</span></button>
-                    <button class="filter-btn" data-value="chinese"><span>🇨🇳</span> <span data-i18n="type-chinese">중식</span></button>
-                    <button class="filter-btn" data-value="japanese"><span>🇯🇵</span> <span data-i18n="type-japanese">일식</span></button>
-                    <button class="filter-btn" data-value="western"><span>🍝</span> <span data-i18n="type-western">양식</span></button>
-                    <button class="filter-btn" data-value="world"><span>🌍</span> <span data-i18n="type-world">세계음식</span></button>
-                    <button class="filter-btn" data-value="any"><span>🎲</span> <span data-i18n="type-any">아무거나</span></button>
-                </div>
-            </div>
-        </section>
-        <button id="recommend-button">🍴 메뉴 추천 받기!</button>
-        <div id="result"></div>
+    </section>
 
-        <section class="contact-section" id="contact-section">
-            <h2 id="contact-title">📩 제휴 문의</h2>
-            <p id="contact-desc">비즈니스 제휴, 광고, 협업 등 문의사항을 남겨주세요.</p>
-            <form id="contact-form" action="https://formspree.io/f/xqedpwda" method="POST">
-                <div class="form-group">
-                    <label for="name" id="form-label-name">이름 / 회사명</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="email" id="form-label-email">이메일</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="message" id="form-label-message">문의 내용</label>
-                    <textarea id="message" name="message" rows="4" required></textarea>
-                </div>
-                <button type="submit" id="contact-submit">📨 문의 보내기</button>
-            </form>
-            <p id="contact-success" class="success-msg" style="display:none;">✅ 문의가 성공적으로 전송되었습니다!</p>
-        </section>
+    <!-- Question Page -->
+    <section id="quiz" class="page">
+        <div class="quiz-container">
+            <div class="quiz-character" id="quiz-character">🤔</div>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-text" id="progress-text">1/10</div>
+            <div class="question-area" id="question-area">
+                <p class="question-text" id="question-text"></p>
+                <div class="options" id="options"></div>
+            </div>
+            <button class="back-btn" id="back-btn" style="display:none;">← 이전</button>
+        </div>
+    </section>
 
-        <section class="comments-section" id="comments-section">
-            <h2 id="comments-title">💬 댓글</h2>
-            <div id="disqus_thread"></div>
-            <script>
-                function getDisqusColorScheme() {
-                    return document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-                }
-                var disqus_config = function () {
-                    this.page.url = window.location.href;
-                    this.page.identifier = 'whats-for-dinner';
-                    this.page.colorScheme = getDisqusColorScheme();
-                };
-                (function() {
-                    var d = document, s = d.createElement('script');
-                    s.src = 'https://clozer1-1.disqus.com/embed.js';
-                    s.setAttribute('data-timestamp', +new Date());
-                    (d.head || d.body).appendChild(s);
-                })();
-            </script>
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-        </section>
-    </main>
+    <!-- Loading Page -->
+    <section id="loading" class="page">
+        <div class="loading-container">
+            <div class="loading-emoji-wrap">
+                <span class="loading-emoji" id="loading-emoji">🔍</span>
+            </div>
+            <p class="loading-text" id="loading-text">대화 패턴 분석 중...</p>
+            <div class="loading-bar-wrap">
+                <div class="loading-bar" id="loading-bar"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Result Page -->
+    <section id="result" class="page">
+        <div class="result-container" id="result-container"></div>
+    </section>
+
     <script defer type="text/javascript" src="/main.js"></script>
 </body>
 </html>
