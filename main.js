@@ -774,4 +774,94 @@ document.addEventListener('DOMContentLoaded', () => {
             renderQuestion();
         }
     });
+
+    // ==================== NAVIGATION ====================
+    const navHamburger = document.getElementById('nav-hamburger');
+    const navLinks = document.getElementById('nav-links');
+
+    if (navHamburger && navLinks) {
+        navHamburger.addEventListener('click', () => {
+            navHamburger.classList.toggle('active');
+            navLinks.classList.toggle('open');
+        });
+
+        // Close mobile menu on link click
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navHamburger.classList.remove('active');
+                navLinks.classList.remove('open');
+            });
+        });
+    }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href === '#') return;
+            const target = document.querySelector(href);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+
+    // ==================== FAQ ACCORDION ====================
+    document.querySelectorAll('.faq-question').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const item = btn.parentElement;
+            const wasOpen = item.classList.contains('open');
+            // Close all others
+            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+            if (!wasOpen) item.classList.add('open');
+        });
+    });
+
+    // ==================== MODALS ====================
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.add('active');
+    }
+
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.remove('active');
+    }
+
+    // Privacy modal triggers
+    const privacyTriggers = [
+        document.getElementById('nav-privacy-link'),
+        document.getElementById('footer-privacy-link')
+    ];
+    privacyTriggers.forEach(el => {
+        if (el) el.addEventListener('click', (e) => { e.preventDefault(); openModal('privacy-modal'); });
+    });
+
+    // Terms modal trigger
+    const termsTrigger = document.getElementById('footer-terms-link');
+    if (termsTrigger) termsTrigger.addEventListener('click', (e) => { e.preventDefault(); openModal('terms-modal'); });
+
+    // About modal trigger
+    const aboutTrigger = document.getElementById('footer-about-link');
+    if (aboutTrigger) aboutTrigger.addEventListener('click', (e) => { e.preventDefault(); openModal('about-modal'); });
+
+    // Close buttons
+    document.getElementById('privacy-close')?.addEventListener('click', () => closeModal('privacy-modal'));
+    document.getElementById('terms-close')?.addEventListener('click', () => closeModal('terms-modal'));
+    document.getElementById('about-close')?.addEventListener('click', () => closeModal('about-modal'));
+
+    // Close on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.classList.remove('active');
+        });
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+        }
+    });
 });
